@@ -1,0 +1,26 @@
+{
+    "name": "scrawler/app",
+    "description": "scrawler framework main app container",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Scrawler\\App\\": "src/"
+        },
+        "files": [
+            "src/functions.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "ipranjal",
+            "email": "pranjaltech10@gmail.com"
+        }
+    ],
+    "require": {
+        "scrawler/router": "^4.1",
+        "php-di/php-di": "^7.0",
+        "phlak/config": "^8.0",
+        "scrawler/http": "^1.0"
+    }
+}
