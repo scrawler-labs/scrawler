@@ -21,6 +21,7 @@
         "scrawler/router": "^4.1",
         "php-di/php-di": "^7.0",
         "phlak/config": "^8.0",
-        "scrawler/http": "^1.0"
+        "scrawler/http": "^1.0",
+        "vlucas/phpdotenv": "^5.6"
     }
 }

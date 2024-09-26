@@ -22,3 +22,21 @@ if (! function_exists('url')) {
         return \Scrawler\App::engine()->request()->getSchemeAndHttpHost().\Scrawler\App::engine()->request()->getBasePath().$path;
     }
 }
+
+if (! function_exists('env')) {
+    function env($key)
+    {
+         if (isset($_ENV[$key])) {
+            return $_ENV[$key];
+         }
+         if(getenv($key)){
+            return getenv($key);
+         }
+       
+         if(request()->server->has($key)){
+            return request()->server->get($key);
+         }
+
+         return null;
+    }
+}
