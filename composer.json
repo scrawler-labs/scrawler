@@ -5,7 +5,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Scrawler": "src/"
+            "Scrawler\\": "src/"
         },
         "files": [
             "src/functions.php"
