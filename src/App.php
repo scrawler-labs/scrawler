@@ -109,7 +109,7 @@ class App
         $response = $this->dispatch();
         }catch(\Exception $e){
             if($this->config()->get('debug')){
-                $response = $this->makeResponse($e->getMessage(),500);
+                throw $e;
             }else{
                 $response = $this->container->call($this->handler['500']);
                 $response = $this->makeResponse($response,500);
