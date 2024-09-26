@@ -113,10 +113,10 @@ class App
     }
 
     public function __call($function,$args){
-        if(function_exists($function)){
+        if(!$this->container->has($function) && function_exists($function)){
             return call_user_func_array($function,$args);
         }
-        $this->container->get($function);
+        return $this->container->get($function);
     }
 
     public function register($name,$value){
