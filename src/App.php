@@ -29,6 +29,9 @@ class App
         $this->registerHandler('500',function(){
                 return '500 Internal Server Error';
         });
+        $this->registerHandler('exception',function($e){
+            return $e->getMessage();
+        });
 
          
     }
@@ -109,7 +112,8 @@ class App
         $response = $this->dispatch();
         }catch(\Exception $e){
             if($this->config()->get('debug')){
-                throw $e;
+                $response = $this->container->call($this->handler['exception'],[$e]);
+                $response = $this->makeResponse($response,500);
             }else{
                 $response = $this->container->call($this->handler['500']);
                 $response = $this->makeResponse($response,500);
