@@ -75,7 +75,7 @@ class App
         }
        
         $httpMethod = $request->getMethod();
-        $uri = $request->getUri();
+        $uri = $request->getRequestUri();
 
         [$status,$handler,$args,$debug] = $this->router->dispatch($httpMethod,$uri);
         switch ($status){
