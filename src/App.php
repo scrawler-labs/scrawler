@@ -22,16 +22,30 @@ class App
         $this->container = new \DI\Container();
         $this->register('config', self::create(\PHLAK\Config\Config::class));
         $this->config()->set('debug', false);
+        $this->config()->set('api',false);
+
         $this->registerHandler('404', function () {
+            if($this->config()->get('api')){
+                return ['status'=>404,'msg'=>'404 Not Found'];
+            }
             return '404 Not Found';
         });
         $this->registerHandler('405', function () {
+            if($this->config()->get('api')){
+                return ['status'=>405,'msg'=>'405 Method Not Allowed'];
+            }
             return '405 Method Not Allowed';
         });
         $this->registerHandler('500', function () {
+            if($this->config()->get('api')){
+                return ['status'=>500,'msg'=>'500 Internal Server Error'];
+            }
             return '500 Internal Server Error';
         });
         $this->registerHandler('exception', function ($e) {
+            if($this->config()->get('api')){
+                return ['status'=>500,'msg'=>$e->getMessage()];
+            }
             return $e->getMessage();
         });
         $this->version = 27092024;
@@ -135,18 +149,21 @@ class App
     private function makeResponse($content, $status = 200)
     {
         if (!$content instanceof \Symfony\Component\HttpFoundation\Response) {
+            $response =new \Scrawler\Http\Response();
+            $response->setStatusCode($status);
+
             if (is_array($content)) {
-                $content = \json_encode($content);
-                $type = ['content-type' => 'application/json'];
+                $this->config()->set('api', true);
+                $response->json(\json_encode($content));
+                
+            }else{
+                if($this->config()->get('api')){
+                    $response->json($content);
+                }else{
+                    $response->setContent($content);
+                }
             }
-
-            $type = ['content-type' => 'text/html'];
-
-            $response = new \Scrawler\Http\Response(
-                $content,
-                $status,
-                $type
-            );
+           
         } else {
             $response = $content;
         }
