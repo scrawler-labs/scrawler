@@ -10,7 +10,7 @@ class App
 
     private $container;
 
-    private $handeler = [];
+    private $handler = [];
 
 
     public function __construct()
@@ -19,6 +19,18 @@ class App
          $this->router = new Router();
          $this->container =  new \DI\Container();
          $this->register('config',self::create(\PHLAK\Config\Config::class));
+         $this->config()->set('debug',false);
+         $this->registerHandler('404',function(){
+            return '404 Not Found';
+         });
+         $this->registerHandler('405',function(){
+            return '405 Method Not Allowed';
+         });
+        $this->registerHandler('500',function(){
+                return '500 Internal Server Error';
+        });
+
+         
     }
 
     public static function engine(){
@@ -50,7 +62,7 @@ class App
     }
 
     public function registerHandler($name,$callback){
-        $this->handeler[$name] = $callback;
+        $this->handler[$name] = $callback;
     }
 
     public function dispatch($request = null){
@@ -68,11 +80,19 @@ class App
         [$status,$handler,$args,$debug] = $this->router->dispatch($httpMethod,$uri);
         switch ($status){
             case Router::NOT_FOUND:
-              $response = $this->container->call($this->handeler['404']);
+                if($this->config()->get('debug')){
+                    $response = $this->makeResponse($debug,404);
+                    break;
+                }
+              $response = $this->container->call($this->handler['404']);
               $response = $this->makeResponse($response,404);
               break;
             case Router::METHOD_NOT_ALLOWED:
-                $response = $this->container->call($this->handeler['405']);
+                if($this->config()->get('debug')){
+                    $response = $this->makeResponse($debug,405);
+                    break;
+                }
+                $response = $this->container->call($this->handler['405']);
                 $response = $this->makeResponse($response,405);
               break;
             case Router::FOUND:
@@ -85,7 +105,16 @@ class App
     }
 
     public function run(){
+        try{
         $response = $this->dispatch();
+        }catch(\Exception $e){
+            if($this->config()->get('debug')){
+                $response = $this->makeResponse($e->getMessage(),500);
+            }else{
+                $response = $this->container->call($this->handler['500']);
+                $response = $this->makeResponse($response,500);
+            }
+        }
         $response->send();
     }
 
