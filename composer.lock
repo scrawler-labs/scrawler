@@ -496,16 +496,16 @@
         },
         {
             "name": "scrawler/http",
-            "version": "v1.0.0",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scrawler-labs/http.git",
-                "reference": "ec8b075768721eabef8d6b8917ecfa87b39a9fa5"
+                "reference": "ff6543b012c0131b3065385b469b386532654ac6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scrawler-labs/http/zipball/ec8b075768721eabef8d6b8917ecfa87b39a9fa5",
-                "reference": "ec8b075768721eabef8d6b8917ecfa87b39a9fa5",
+                "url": "https://api.github.com/repos/scrawler-labs/http/zipball/ff6543b012c0131b3065385b469b386532654ac6",
+                "reference": "ff6543b012c0131b3065385b469b386532654ac6",
                 "shasum": ""
             },
             "require": {
@@ -538,9 +538,9 @@
             "description": "Http component for scrawler framework",
             "support": {
                 "issues": "https://github.com/scrawler-labs/http/issues",
-                "source": "https://github.com/scrawler-labs/http/tree/v1.0.0"
+                "source": "https://github.com/scrawler-labs/http/tree/v1.0.2"
             },
-            "time": "2024-09-25T20:04:26+00:00"
+            "time": "2024-09-26T21:33:05+00:00"
         },
         {
             "name": "scrawler/router",
