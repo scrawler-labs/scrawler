@@ -84,8 +84,8 @@ class App
     public function registerHandler($name, $callback)
     {
         if($name == 'exception'){
-            set_error_handler([$callback, 'systemErrorHandler']);
-            set_exception_handler([$callback, 'systemExceptionHandler']);
+            set_error_handler($callback);
+            set_exception_handler($callback);
         }
         $this->handler[$name] = $callback;
     }
