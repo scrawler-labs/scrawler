@@ -89,11 +89,7 @@ class App
     public function dispatch($request = null)
     {
         if (is_null($request)) {
-            if (function_exists('request')) {
-                $request = request();
-            } else {
                 $request = $this->request();
-            }
         }
 
         $httpMethod = $request->getMethod();
