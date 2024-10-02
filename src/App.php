@@ -83,13 +83,17 @@ class App
 
     public function registerHandler($name, $callback)
     {
+        if($name == 'exception'){
+            set_error_handler([$callback, 'systemErrorHandler']);
+            set_exception_handler([$callback, 'systemExceptionHandler']);
+        }
         $this->handler[$name] = $callback;
     }
 
     public function dispatch($request = null)
     {
         if (is_null($request)) {
-                $request = $this->request();
+            $request = $this->request();
         }
 
         $httpMethod = $request->getMethod();
@@ -186,7 +190,7 @@ class App
         return \DI\create($class);
     }
 
-    public function make($class, $params=[])
+    public function make($class, $params = [])
     {
         return $this->container->make($class, $params);
     }
