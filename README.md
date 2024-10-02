@@ -11,7 +11,7 @@
 <br><br>
 
 
-🔥Create simple but powerful web apps and APIs quickly, while writing minumum lines of code🔥<br>
+🔥Create simple but powerful web apps and APIs quickly, with minumum lines of code🔥<br>
 🇮🇳 Made in India 🇮🇳
 </div>
 
