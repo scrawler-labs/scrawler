@@ -22,31 +22,25 @@ class App
         $this->container = new \DI\Container();
         $this->register('config', self::create(\PHLAK\Config\Config::class));
         $this->config()->set('debug', false);
-        $this->config()->set('api',false);
+        $this->config()->set('api', false);
 
         $this->registerHandler('404', function () {
-            if($this->config()->get('api')){
-                return ['status'=>404,'msg'=>'404 Not Found'];
+            if ($this->config()->get('api')) {
+                return ['status' => 404, 'msg' => '404 Not Found'];
             }
             return '404 Not Found';
         });
         $this->registerHandler('405', function () {
-            if($this->config()->get('api')){
-                return ['status'=>405,'msg'=>'405 Method Not Allowed'];
+            if ($this->config()->get('api')) {
+                return ['status' => 405, 'msg' => '405 Method Not Allowed'];
             }
             return '405 Method Not Allowed';
         });
         $this->registerHandler('500', function () {
-            if($this->config()->get('api')){
-                return ['status'=>500,'msg'=>'500 Internal Server Error'];
+            if ($this->config()->get('api')) {
+                return ['status' => 500, 'msg' => '500 Internal Server Error'];
             }
             return '500 Internal Server Error';
-        });
-        $this->registerHandler('exception', function ($e) {
-            if($this->config()->get('api')){
-                return ['status'=>500,'msg'=>$e->getMessage()];
-            }
-            return $e->getMessage();
         });
         $this->version = 27092024;
 
@@ -105,65 +99,66 @@ class App
         $httpMethod = $request->getMethod();
         $uri = $request->getPathInfo();
 
-        [$status, $handler, $args, $debug] = $this->router->dispatch($httpMethod, $uri);
-        switch ($status) {
-            case Router::NOT_FOUND:
-                if ($this->config()->get('debug')) {
-                    throw new \Scrawler\Exception\NotFoundException($debug);
-                }
-                $response = $this->container->call($this->handler['404']);
-                $response = $this->makeResponse($response, 404);
-                break;
-            case Router::METHOD_NOT_ALLOWED:
-                if ($this->config()->get('debug')) {
-                    throw new \Scrawler\Exception\MethodNotAllowedException($debug);
-                }
-                $response = $this->container->call($this->handler['405']);
-                $response = $this->makeResponse($response, 405);
-                break;
-            case Router::FOUND:
-                //call the handler
-                $response = $this->container->call($handler, $args);
-                $response = $this->makeResponse($response, 200);
-            // Send Response
-        }
-        return $response;
-    }
 
-    public function run()
-    {
         try {
-            $response = $this->dispatch();
+            [$status, $handler, $args, $debug] = $this->router->dispatch($httpMethod, $uri);
+            switch ($status) {
+                case Router::NOT_FOUND:
+                    if ($this->config()->get('debug')) {
+                        throw new \Scrawler\Exception\NotFoundException($debug);
+                    }
+                    $response = $this->container->call($this->handler['404']);
+                    $response = $this->makeResponse($response, 404);
+                    break;
+                case Router::METHOD_NOT_ALLOWED:
+                    if ($this->config()->get('debug')) {
+                        throw new \Scrawler\Exception\MethodNotAllowedException($debug);
+                    }
+                    $response = $this->container->call($this->handler['405']);
+                    $response = $this->makeResponse($response, 405);
+                    break;
+                case Router::FOUND:
+                    //call the handler
+                    $response = $this->container->call($handler, $args);
+                    $response = $this->makeResponse($response, 200);
+                // Send Response
+            }
         } catch (\Exception $e) {
             if ($this->config()->get('debug')) {
-                $response = $this->container->call($this->handler['exception'], [$e]);
-                $response = $this->makeResponse($response, 500);
+                throw $e;
             } else {
                 $response = $this->container->call($this->handler['500']);
                 $response = $this->makeResponse($response, 500);
             }
         }
+
+        return $response;
+    }
+
+    public function run()
+    {
+        $response = $this->dispatch();
         $response->send();
     }
 
     private function makeResponse($content, $status = 200)
     {
         if (!$content instanceof \Symfony\Component\HttpFoundation\Response) {
-            $response =new \Scrawler\Http\Response();
+            $response = new \Scrawler\Http\Response();
             $response->setStatusCode($status);
 
             if (is_array($content)) {
                 $this->config()->set('api', true);
                 $response->json(\json_encode($content));
-                
-            }else{
-                if($this->config()->get('api')){
+
+            } else {
+                if ($this->config()->get('api')) {
                     $response->json($content);
-                }else{
+                } else {
                     $response->setContent($content);
                 }
             }
-           
+
         } else {
             $response = $content;
         }
