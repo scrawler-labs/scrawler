@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 namespace Scrawler;
 use \Scrawler\Router\Router;
 
@@ -10,15 +10,31 @@ use \Scrawler\Router\Router;
  */
 class App
 {
-    public static $app;
 
-    private $router;
+    /**
+     * @var App
+     */
+    public static App $app;
 
-    private $container;
+    /**
+     * @var Router
+     */
+    private Router $router;
 
-    private $handler = [];
+    /**
+     * @var \DI\Container
+     */
+    private \DI\Container $container;
 
-    private $version;
+    /**
+     * @var array<\Closure>
+     */
+    private array $handler = [];
+
+    /**
+     * @var int
+     */
+    private int $version;
 
 
 
@@ -27,7 +43,7 @@ class App
         self::$app = $this;
         $this->router = new Router();
         $this->container = new \DI\Container();
-        $this->register('config', self::create(\PHLAK\Config\Config::class));
+        $this->register('config', $this->create(\PHLAK\Config\Config::class));
         $this->config()->set('debug', false);
         $this->config()->set('api', false);
 
@@ -52,52 +68,104 @@ class App
         $this->version = 27092024;
 
     }
-
-    public static function engine()
+    /**
+     * @return \Scrawler\App
+     */
+    public static function engine(): self
     {
+        if (self::$app == null) {
+            self::$app = new self();
+        }
         return self::$app;
     }
 
-    public function registerAutoRoute($dir, $namespace)
+    /**
+     * Register controller directory and namespace for autorouting
+     * @param string $dir 
+     * @param string $namespace
+     */
+    public function registerAutoRoute(string $dir, string $namespace):void
     {
         $this->router->register($dir, $namespace);
     }
 
-    public function get($route, $callback)
+    /**
+     * Register a new get route with the router
+     * @param string $route
+     * @param callable $callback
+     */
+    public function get(string $route, callable $callback):void
     {
-        $this->router->get($route, $callback);
+        $callable = \Closure::fromCallable(callback: $callback);
+        $this->router->get($route, $callable);
     }
 
-    public function post($route, $callback)
+    /**
+     * Register a new post route with the router
+     * @param string $route
+     * @param callable $callback
+     */
+    public function post(string $route,callable $callback):void
     {
-        $this->router->post($route, $callback);
+        $callable = \Closure::fromCallable(callback: $callback);
+        $this->router->post($route, $callable);
     }
 
-    public function put($route, $callback)
+    /**
+     * Register a new put route with the router
+     * @param string $route
+     * @param callable $callback
+     */
+    public function put(string $route,callable $callback): void
     {
-        $this->router->put($route, $callback);
+        $callable = \Closure::fromCallable(callback: $callback);
+        $this->router->put($route, $callable);
     }
 
-    public function delete($route, $callback)
+    /**
+     * Register a new delete route with the router
+     * @param string $route
+     * @param callable $callback
+     */
+    public function delete(string $route,callable $callback): void
     {
-        $this->router->delete($route, $callback);
+        $callable = \Closure::fromCallable(callback: $callback);
+        $this->router->delete($route, $callable);
     }
 
-    public function all($route, $callback)
+    /**
+     * Register a new all route with the router
+     * @param string $route
+     * @param callable $callback
+     */
+    public function all($route, $callback): void
     {
-        $this->router->all($route, $callback);
+        $callable = \Closure::fromCallable(callback: $callback);
+        $this->router->all($route, $callable);
     }
 
-    public function registerHandler($name, $callback)
+    /**
+     * Register a new handler in scrawler
+     * currently uselful hadlers are 404,405,500 and exception
+     * @param string $name
+     * @param callable $callback
+     */
+    public function registerHandler(string $name,callable $callback): void
     {
-        if($name == 'exception'){
-            set_error_handler($callback);
-            set_exception_handler($callback);
+        $callable = \Closure::fromCallable(callback: $callback);
+        if ($name == 'exception') {
+            set_error_handler($callable);
+            set_exception_handler($callable);
         }
-        $this->handler[$name] = $callback;
+        $this->handler[$name] = $callable;
     }
 
-    public function dispatch($request = null)
+    /**
+     * Dispatch the request to the router and create response
+     * @param \Scrawler\Http\Request|null $request
+     * @return \Scrawler\Http\Response
+     */
+    public function dispatch(\Scrawler\Http\Request $request = null): \Scrawler\Http\Response
     {
         if (is_null($request)) {
             $request = $this->request();
@@ -131,7 +199,7 @@ class App
                 // Send Response
             }
         } catch (\Exception $e) {
-            if ($this->config()->get('debug',false)) {
+            if ($this->config()->get('debug', false)) {
                 throw $e;
             } else {
                 $response = $this->container->call($this->handler['500']);
@@ -142,15 +210,24 @@ class App
         return $response;
     }
 
-    public function run()
+    /**
+     * Dipatch request and send response on screen
+     */
+    public function run(): void
     {
         $response = $this->dispatch();
         $response->send();
     }
 
-    private function makeResponse($content, $status = 200)
+    /**
+     * Builds response object from content
+     * @param array<string,mixed>|string|\Scrawler\Http\Response $content
+     * @param int $status
+     * @return \Scrawler\Http\Response
+     */
+    private function makeResponse(array|string|\Scrawler\Http\Response $content, int $status = 200): \Scrawler\Http\Response
     {
-        if (!$content instanceof \Symfony\Component\HttpFoundation\Response) {
+        if (!$content instanceof \Scrawler\Http\Response) {
             $response = new \Scrawler\Http\Response();
             $response->setStatusCode($status);
 
@@ -174,7 +251,13 @@ class App
         return $this->response();
     }
 
-    public function __call($function, $args)
+    /**
+     * Magic method to call container functions
+     * @param string $function
+     * @param array<mixed> $args
+     * @return mixed
+     */
+    public function __call($function, $args): mixed
     {
         try {
             if (!$this->container->has($function) && function_exists($function)) {
@@ -187,27 +270,55 @@ class App
         }
     }
 
-    public function register($name, $value)
+    /**
+     * Register a new service in the container
+     * @param string $name
+     * @param mixed $value
+     */
+    public function register($name, $value): void
     {
         $this->container->set($name, $value);
     }
 
-    public static function create($class)
+    /**
+     * Create a new definition helper
+     * @param string $class
+     * @return \DI\Definition\Helper\CreateDefinitionHelper
+     */
+    public function create(string $class): \DI\Definition\Helper\CreateDefinitionHelper
     {
         return \DI\create($class);
     }
 
-    public function make($class, $params = [])
+    /**
+     * Make a new instance of class rather than getting same instance
+     * use it before registering the class to container
+     * app()->register('MyClass',app()->make('App\Class'));
+     * 
+     * @param string $class
+     * @param array<mixed> $params
+     * @return mixed
+     */
+    public function make(string $class,array $params = []): mixed
     {
         return $this->container->make($class, $params);
     }
 
-    public function has($class)
+    /**
+     * Check if a class is registered in the container
+     * @param string $class
+     * @return bool
+     */
+    public function has(string $class):bool
     {
         return $this->container->has($class);
     }
 
-    public function getVersion()
+    /**
+     * Get the build version of scrawler
+     * @return int
+     */
+    public function getVersion(): int
     {
         return $this->version;
     }

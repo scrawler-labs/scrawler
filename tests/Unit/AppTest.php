@@ -7,8 +7,7 @@ it('tests if registerAutoRoute() works', function () {
         '/',
         'GET',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('Hello World');
 });
 
@@ -21,8 +20,7 @@ it('tests if get() works', function () {
         '/test',
         'GET',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('Hello World');
 });
 
@@ -35,8 +33,7 @@ it('tests if post() works', function () {
         '/test/post',
         'POST',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('Hello World');
 });
 
@@ -49,8 +46,7 @@ it('tests if put() works', function () {
         '/test/put',
         'PUT',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('Hello World');
 });
 
@@ -63,8 +59,7 @@ it('tests if delete() works', function () {
         '/test/delete',
         'DELETE',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('Hello World');
 });
 
@@ -77,16 +72,14 @@ it('tests if all() works', function () {
         '/test/all',
         'GET',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('Hello World');
 
     $request = \Scrawler\Http\Request::create(
         '/test/all',
         'POST',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('Hello World');
 });
 
@@ -99,8 +92,7 @@ it('tests if registerHandler() works', function () {
         '/test/something',
         'GET',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('Its a custom 404');
 });
 
@@ -119,8 +111,7 @@ it('tests default 404 in api mode', function () {
         '/test/something',
         'GET',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('{"status":404,"msg":"404 Not Found"}');
 });
 
@@ -130,8 +121,7 @@ it('tests default 404 in web mode', function () {
         '/test/something',
         'GET',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('404 Not Found');
 });
 
@@ -144,8 +134,7 @@ it('tests default 405 in api mode', function () {
         '/test',
         'POST',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('{"status":405,"msg":"405 Method Not Allowed"}');
 });
 
@@ -156,8 +145,7 @@ it('tests default 405 in web mode', function () {
         '/test',
         'POST',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('405 Method Not Allowed');
 });
 
@@ -169,8 +157,7 @@ it('tests default 500 in api mode', function () {
         '/exception',
         'GET',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('{"status":500,"msg":"500 Internal Server Error"}');
 });
 
@@ -181,8 +168,7 @@ it('tests default 500 in web mode', function () {
         '/exception',
         'GET',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('500 Internal Server Error');
 });
 
@@ -199,8 +185,7 @@ it('tests for NotFoundException', function () {
         '/notfound',
         'GET',
     );
-    $app->register('request', $request);
-    $app->dispatch();
+    $app->dispatch($request);
 })->throws(\Scrawler\Exception\NotFoundException::class);
 
 it('tests for MethodNotAllowedException', function () {
@@ -211,8 +196,7 @@ it('tests for MethodNotAllowedException', function () {
         '/test',
         'POST',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
 })->throws(\Scrawler\Exception\MethodNotAllowedException::class);
 
 
@@ -236,8 +220,7 @@ it('tests for json response in api mode ', function () {
         '/test/json',
         'GET',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('{"data":"Hello World"}');
 });
 
@@ -252,8 +235,7 @@ it('tests when response is already a response object', function () {
         '/test',
         'GET',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('Hello World');
 });
 
