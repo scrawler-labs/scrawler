@@ -2,6 +2,12 @@
 
 namespace Scrawler;
 use \Scrawler\Router\Router;
+
+/**
+ * @method \PHLAK\Config\Config config()
+ * @method \Scrawler\Http\Request request()
+ * @method \Scrawler\Http\Response response()
+ */
 class App
 {
     public static $app;
@@ -13,6 +19,7 @@ class App
     private $handler = [];
 
     private $version;
+
 
 
     public function __construct()
@@ -98,7 +105,7 @@ class App
 
         $httpMethod = $request->getMethod();
         $uri = $request->getPathInfo();
-
+        $response = $this->makeResponse('', 200);
 
         try {
             [$status, $handler, $args, $debug] = $this->router->dispatch($httpMethod, $uri);
@@ -124,7 +131,7 @@ class App
                 // Send Response
             }
         } catch (\Exception $e) {
-            if ($this->config()->get('debug')) {
+            if ($this->config()->get('debug',false)) {
                 throw $e;
             } else {
                 $response = $this->container->call($this->handler['500']);
