@@ -167,7 +167,7 @@ class App
     {
         try {
             if (!$this->container->has($function) && function_exists($function)) {
-                return call_user_func_array($function, $args);
+                return $this->container->call($function, $args);
             }
 
             return $this->container->get($function);
@@ -186,7 +186,7 @@ class App
         return \DI\create($class);
     }
 
-    public function make($class, $params)
+    public function make($class, $params=[])
     {
         return $this->container->make($class, $params);
     }
