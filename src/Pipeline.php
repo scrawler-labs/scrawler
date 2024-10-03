@@ -30,7 +30,8 @@ final class Pipeline
 
     /**
      * Add middleware(s) or Pipeline
-     * @param array<callable|\Closure|string> $middlewares
+     * @template T of MiddlewareInterface
+     * @param array<callable|\Closure|class-string<T>> $middlewares
      * @return array<\Closure>
      */
     public function validateMiddleware(array $middlewares): array
@@ -39,11 +40,19 @@ final class Pipeline
         if(is_array($middlewares) ) {
             foreach ($middlewares as $middleware) {
                 if(is_string($middleware)) {
-                    $middleware = new $middleware();
-                }
-                if ($middleware instanceof MiddlewareInterface) {
-                    $middleware =  $middleware->run(...);
-                }
+                    if(class_exists($middleware)) {
+                        $middlewareObj = new $middleware;
+                        if($middlewareObj instanceof MiddlewareInterface) {
+                            $callable = [$middlewareObj, 'run'];
+                            $middleware = \Closure::fromCallable(callback: $callable);
+                        } else {
+                            throw new \Scrawler\Exception\InvalidMiddlewareException('Middleware class does not implement MiddlewareInterface');
+                        }
+                    } else {
+                        throw new \Scrawler\Exception\InvalidMiddlewareException('Middleware class does not exist');
+                    }
+
+                }              
                 if(is_callable($middleware)) {
                     $middleware = \Closure::fromCallable(callback: $middleware);
                 }
