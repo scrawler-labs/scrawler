@@ -1,5 +1,11 @@
 <?php
 declare(strict_types=1);
+/**
+ * The main App class for scrawler
+ *
+ * @package: Scrawler
+ * @author: Pranjal Pandey
+ */
 namespace Scrawler;
 use \Scrawler\Router\Router;
 
@@ -7,6 +13,7 @@ use \Scrawler\Router\Router;
  * @method \PHLAK\Config\Config config()
  * @method \Scrawler\Http\Request request()
  * @method \Scrawler\Http\Response response()
+ * @method \Scrawler\Pipeline pipeline()
  */
 class App
 {
@@ -27,14 +34,14 @@ class App
     private \DI\Container $container;
 
     /**
-     * @var array<\Closure>
+     * @var array<\Closure|callable>
      */
     private array $handler = [];
 
     /**
-     * @var int
+     * @var string
      */
-    private int $version;
+    private string $version;
 
 
 
@@ -43,29 +50,31 @@ class App
         self::$app = $this;
         $this->router = new Router();
         $this->container = new \DI\Container();
-        $this->register('config', $this->create(\PHLAK\Config\Config::class));
+        $this->register('config', value: $this->create(\PHLAK\Config\Config::class));
+        $this->register('pipeline', value: $this->create(\Scrawler\Pipeline::class));
         $this->config()->set('debug', false);
         $this->config()->set('api', false);
+        $this->config()->set('middlewares', []);
 
-        $this->registerHandler('404', function () {
+        $this->handler('404', function () {
             if ($this->config()->get('api')) {
                 return ['status' => 404, 'msg' => '404 Not Found'];
             }
             return '404 Not Found';
         });
-        $this->registerHandler('405', function () {
+        $this->handler('405', function () {
             if ($this->config()->get('api')) {
                 return ['status' => 405, 'msg' => '405 Method Not Allowed'];
             }
             return '405 Method Not Allowed';
         });
-        $this->registerHandler('500', function () {
+        $this->handler('500', function () {
             if ($this->config()->get('api')) {
                 return ['status' => 500, 'msg' => '500 Internal Server Error'];
             }
             return '500 Internal Server Error';
         });
-        $this->version = 27092024;
+        $this->version = "03082024";
 
     }
     /**
@@ -84,7 +93,7 @@ class App
      * @param string $dir 
      * @param string $namespace
      */
-    public function registerAutoRoute(string $dir, string $namespace):void
+    public function registerAutoRoute(string $dir, string $namespace): void
     {
         $this->router->register($dir, $namespace);
     }
@@ -92,72 +101,85 @@ class App
     /**
      * Register a new get route with the router
      * @param string $route
-     * @param callable $callback
+     * @param \Closure|callable $callback
      */
-    public function get(string $route, callable $callback):void
+    public function get(string $route, \Closure|callable $callback): void
     {
-        $callable = \Closure::fromCallable(callback: $callback);
-        $this->router->get($route, $callable);
+        if(is_callable($callback)){
+            $callback = \Closure::fromCallable(callback: $callback);
+        }
+        $this->router->get($route, $callback);
     }
 
     /**
      * Register a new post route with the router
      * @param string $route
-     * @param callable $callback
+     * @param \Closure|callable $callback
      */
-    public function post(string $route,callable $callback):void
+    public function post(string $route, \Closure|callable $callback): void
     {
-        $callable = \Closure::fromCallable(callback: $callback);
-        $this->router->post($route, $callable);
+        if(is_callable($callback)){
+            $callback = \Closure::fromCallable(callback: $callback);
+        }
+        $this->router->post($route, $callback);
     }
 
     /**
      * Register a new put route with the router
      * @param string $route
-     * @param callable $callback
+     * @param \Closure|callable $callback
      */
-    public function put(string $route,callable $callback): void
+    public function put(string $route, \Closure|callable $callback): void
     {
-        $callable = \Closure::fromCallable(callback: $callback);
-        $this->router->put($route, $callable);
+        if(is_callable($callback)){
+            $callback = \Closure::fromCallable(callback: $callback);
+        }
+        $this->router->put($route, $callback);
     }
 
     /**
      * Register a new delete route with the router
      * @param string $route
-     * @param callable $callback
+     * @param \Closure|callable $callback
      */
-    public function delete(string $route,callable $callback): void
+    public function delete(string $route, \Closure|callable $callback): void
     {
-        $callable = \Closure::fromCallable(callback: $callback);
-        $this->router->delete($route, $callable);
+        if(is_callable($callback)){
+            $callback = \Closure::fromCallable(callback: $callback);
+        }
+        $this->router->delete($route, $callback);
     }
 
     /**
      * Register a new all route with the router
      * @param string $route
-     * @param callable $callback
+     * @param \Closure|callable $callback
      */
-    public function all($route, $callback): void
+    public function all(string $route,\Closure|callable $callback): void
     {
-        $callable = \Closure::fromCallable(callback: $callback);
-        $this->router->all($route, $callable);
+        if(is_callable($callback)){
+            $callback = \Closure::fromCallable(callback: $callback);
+        }
+        $this->router->all($route, $callback);
     }
 
     /**
      * Register a new handler in scrawler
      * currently uselful hadlers are 404,405,500 and exception
      * @param string $name
-     * @param callable $callback
+     * @param \Closure|callable $callback
      */
-    public function registerHandler(string $name,callable $callback): void
+    public function handler(string $name, \Closure|callable $callback): void
     {
-        $callable = \Closure::fromCallable(callback: $callback);
-        if ($name == 'exception') {
-            set_error_handler($callable);
-            set_exception_handler($callable);
+        if(is_callable($callback)){
+            $callback = \Closure::fromCallable(callback: $callback);
+
         }
-        $this->handler[$name] = $callable;
+        if ($name == 'exception') {
+            set_error_handler($callback);
+            set_exception_handler($callback);
+        }
+        $this->handler[$name] = $callback;
     }
 
     /**
@@ -170,7 +192,19 @@ class App
         if (is_null($request)) {
             $request = $this->request();
         }
+        $pipeline = new Pipeline();
+        $response = $pipeline->middleware($this->config()->get('middlewares'))->run($request, function ($request) {
+            return $this->dispatchRouter($request);
+        });
+        return $response;
+    }
 
+    /**
+     * Dispatch the request to the router and create response
+     * @param \Scrawler\Http\Request $request
+     * @return \Scrawler\Http\Response
+     */
+    private function dispatchRouter(\Scrawler\Http\Request $request): \Scrawler\Http\Response{
         $httpMethod = $request->getMethod();
         $uri = $request->getPathInfo();
         $response = $this->makeResponse('', 200);
@@ -246,9 +280,8 @@ class App
         } else {
             $response = $content;
         }
-        $this->register('response', $response);
 
-        return $this->response();
+        return $response;
     }
 
     /**
@@ -271,15 +304,33 @@ class App
     }
 
     /**
-     * Register a new service in the container
+     * Add middleware(s)
+     * @param \Closure|callable|array<callable>|string $middlewares
+     */
+    public function middleware(\Closure|callable|array|string $middlewares): void{
+        $this->config()->append('middlewares',$middlewares);
+        $middlewares = $this->pipeline()->validateMiddleware(middlewares: $this->config()->get('middlewares'));
+        $this->config()->set('middlewares',$middlewares);
+    }
+
+    /**
+     * Register a new service in the container, set force to true to override existing service
      * @param string $name
      * @param mixed $value
+     * @param bool $force
      */
-    public function register($name, $value): void
+    public function register($name, $value,bool $force = false): void
     {
+        if($this->container->has($name) && !$force){
+            throw new \Scrawler\Exception\ContainerException('Service with this name already registered, please set $force = true to override');
+        }
+        if($this->container->has($name) && ($name == 'config' || $name == 'pipeline')){
+            throw new \Scrawler\Exception\ContainerException('Service with this name cannot be overridden');
+        }
         $this->container->set($name, $value);
     }
 
+   
     /**
      * Create a new definition helper
      * @param string $class
@@ -299,7 +350,7 @@ class App
      * @param array<mixed> $params
      * @return mixed
      */
-    public function make(string $class,array $params = []): mixed
+    public function make(string $class, array $params = []): mixed
     {
         return $this->container->make($class, $params);
     }
@@ -309,16 +360,16 @@ class App
      * @param string $class
      * @return bool
      */
-    public function has(string $class):bool
+    public function has(string $class): bool
     {
         return $this->container->has($class);
     }
 
     /**
      * Get the build version of scrawler
-     * @return int
+     * @return string
      */
-    public function getVersion(): int
+    public function getVersion(): string
     {
         return $this->version;
     }

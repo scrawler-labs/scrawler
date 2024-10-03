@@ -2,7 +2,7 @@
 
 namespace Tests\Controllers;
 
-class Main
+class Test
 {
     public function getIndex()
     {

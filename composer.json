@@ -5,12 +5,16 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Scrawler\\": "src/",
-            "Tests\\Controllers\\": "tests/Controllers/"
+            "Scrawler\\": "src/"
         },
         "files": [
             "src/functions.php"
         ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
     },
     "authors": [
         {

@@ -4,7 +4,7 @@ it('tests if registerAutoRoute() works', function () {
     $app = new \Scrawler\App();
     $app->registerAutoRoute(__DIR__ . '/../Controllers', 'Tests\\Controllers');
     $request = \Scrawler\Http\Request::create(
-        '/',
+        '/test',
         'GET',
     );
     $response = $app->dispatch($request);
@@ -83,9 +83,9 @@ it('tests if all() works', function () {
     expect($response->getContent())->toBe('Hello World');
 });
 
-it('tests if registerHandler() works', function () {
+it('tests if register handler() works', function () {
     $app = new \Scrawler\App();
-    $app->registerHandler('404', function () {
+    $app->handler('404', function () {
         return 'Its a custom 404';
     });
     $request = \Scrawler\Http\Request::create(
@@ -103,6 +103,28 @@ it('tests if register() works', function () {
     $test = app()->test()->test();
     expect($test)->toBe('test function works');
 });
+
+it('tests if register() throws error on override', function () {
+    $app = new \Scrawler\App();
+    $test = new \Tests\Controllers\Feature\Test();
+    $app->register('test', $test);
+    $app->register('test', $test);
+})->throws(\Scrawler\Exception\ContainerException::class);
+
+it('tests if register() lets force override', function () {
+    $app = new \Scrawler\App();
+    $test = new \Tests\Controllers\Feature\Test();
+    $app->register('test', $test);
+    $app->register('test', $test,true);
+    $test = app()->test()->test();
+    expect($test)->toBe('test function works');
+});
+
+it('tests if register() stops core override', function () {
+    $app = new \Scrawler\App();
+    $test = new \Tests\Controllers\Feature\Test();
+    $app->register('config', $test,true);
+})->throws(\Scrawler\Exception\ContainerException::class);
 
 it('tests default 404 in api mode', function () {
     $app = new \Scrawler\App();
@@ -131,7 +153,7 @@ it('tests default 405 in api mode', function () {
     $app->registerAutoRoute(__DIR__ . '/../Controllers', 'Tests\\Controllers');
 
     $request = \Scrawler\Http\Request::create(
-        '/test',
+        '/test/test',
         'POST',
     );
     $response = $app->dispatch($request);
@@ -142,7 +164,7 @@ it('tests default 405 in web mode', function () {
     $app = new \Scrawler\App();
     $app->registerAutoRoute(__DIR__ . '/../Controllers', 'Tests\\Controllers');
     $request = \Scrawler\Http\Request::create(
-        '/test',
+        '/test/test',
         'POST',
     );
     $response = $app->dispatch($request);
@@ -154,7 +176,7 @@ it('tests default 500 in api mode', function () {
     $app->config()->set('api', true);
     $app->registerAutoRoute(__DIR__ . '/../Controllers', 'Tests\\Controllers');
     $request = \Scrawler\Http\Request::create(
-        '/exception',
+        '/test/exception',
         'GET',
     );
     $response = $app->dispatch($request);
@@ -165,7 +187,7 @@ it('tests default 500 in web mode', function () {
     $app = new \Scrawler\App();
     $app->registerAutoRoute(__DIR__ . '/../Controllers', 'Tests\\Controllers');
     $request = \Scrawler\Http\Request::create(
-        '/exception',
+        '/test/exception',
         'GET',
     );
     $response = $app->dispatch($request);
@@ -193,7 +215,7 @@ it('tests for MethodNotAllowedException', function () {
     $app->registerAutoRoute(__DIR__ . '/../Controllers', 'Tests\\Controllers');
     $app->config()->set('debug', true);
     $request = \Scrawler\Http\Request::create(
-        '/test',
+        '/test/test',
         'POST',
     );
     $response = $app->dispatch($request);
