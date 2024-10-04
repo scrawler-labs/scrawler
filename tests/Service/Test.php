@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Controllers\Feature;
+namespace Tests\Service;
 
 class Test
 {

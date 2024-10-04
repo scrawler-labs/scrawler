@@ -183,6 +183,17 @@ class App
     }
 
     /**
+     * Get the handler by key
+     * @param string $key
+     * @return \Closure|callable
+     */
+    public function getHandler($key): \Closure|callable
+    {
+        return $this->handler[$key];
+
+    }
+
+    /**
      * Dispatch the request to the router and create response
      * @param \Scrawler\Http\Request|null $request
      * @return \Scrawler\Http\Response
@@ -363,6 +374,17 @@ class App
     public function has(string $class): bool
     {
         return $this->container->has($class);
+    }
+
+    /**
+     * Call given function , missing params will be resolved from container
+     * @param string|callable $class
+     * @param array<mixed> $params
+     * @return mixed
+     */
+    public function call(string|callable $class, array $params = []): mixed
+    {
+        return $this->container->call($class, $params);
     }
 
     /**

@@ -96,9 +96,19 @@ it('tests if register handler() works', function () {
     expect($response->getContent())->toBe('Its a custom 404');
 });
 
+it('tests if  getHandler() works', function () {
+    $app = new \Scrawler\App();
+    $app->handler('404', function () {
+        return 'Its a custom 404';
+    });
+    $handler = $app->getHandler('404');
+
+    expect($handler)->toBeCallable();
+});
+
 it('tests if register() works', function () {
     $app = new \Scrawler\App();
-    $test = new \Tests\Controllers\Feature\Test();
+    $test = new \Tests\Service\Test();
     $app->register('test', $test);
     $test = app()->test()->test();
     expect($test)->toBe('test function works');
@@ -106,14 +116,14 @@ it('tests if register() works', function () {
 
 it('tests if register() throws error on override', function () {
     $app = new \Scrawler\App();
-    $test = new \Tests\Controllers\Feature\Test();
+    $test = new \Tests\Service\Test();
     $app->register('test', $test);
     $app->register('test', $test);
 })->throws(\Scrawler\Exception\ContainerException::class);
 
 it('tests if register() lets force override', function () {
     $app = new \Scrawler\App();
-    $test = new \Tests\Controllers\Feature\Test();
+    $test = new \Tests\Service\Test();
     $app->register('test', $test);
     $app->register('test', $test,true);
     $test = app()->test()->test();
@@ -122,7 +132,7 @@ it('tests if register() lets force override', function () {
 
 it('tests if register() stops core override', function () {
     $app = new \Scrawler\App();
-    $test = new \Tests\Controllers\Feature\Test();
+    $test = new \Tests\Service\Test();
     $app->register('config', $test,true);
 })->throws(\Scrawler\Exception\ContainerException::class);
 
@@ -269,10 +279,18 @@ it('tests function being called on __call()', function () {
 
 it('tests for make() function', function () {
     $app = new \Scrawler\App();
-    $app->register('test', 'Tests\Controllers\Feature\Test');
-    $test = $app->make('Tests\Controllers\Feature\Test');
+    $app->register('test', 'Tests\Service\Test');
+    $test = $app->make('Tests\Service\Test');
     $test = $test->test();
     expect($test)->toBe('test function works');
+});
+
+it('tests if call() works', function () {
+    $app = new \Scrawler\App();
+    $result = $app->call(function(){
+        return 'test function works';
+    });
+    expect($result)->toBe('test function works');
 });
 
 it('tests getVersion function', function () {
