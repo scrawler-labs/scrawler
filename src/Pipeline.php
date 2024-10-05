@@ -37,47 +37,45 @@ final class Pipeline
     public function validateMiddleware(array $middlewares): array
     {
         $validated = [];
-        if(is_array($middlewares) ) {
-            foreach ($middlewares as $middleware) {
-                if(is_string($middleware)) {
-                    if(class_exists($middleware)) {
-                        $middlewareObj = new $middleware;
-                        if($middlewareObj instanceof MiddlewareInterface) {
-                            $callable = [$middlewareObj, 'run'];
-                            $middleware = \Closure::fromCallable(callback: $callable);
-                        } else {
-                            throw new \Scrawler\Exception\InvalidMiddlewareException('Middleware class does not implement MiddlewareInterface');
-                        }
+        foreach ($middlewares as $middleware) {
+            if (is_string($middleware)) {
+                if (class_exists($middleware)) {
+                    $middlewareObj = new $middleware;
+                    if ($middlewareObj instanceof MiddlewareInterface) {
+                        $callable = [$middlewareObj, 'run'];
+                        $middleware = \Closure::fromCallable(callback: $callable);
                     } else {
-                        throw new \Scrawler\Exception\InvalidMiddlewareException('Middleware class does not exist');
+                        throw new \Scrawler\Exception\InvalidMiddlewareException('Middleware class does not implement MiddlewareInterface');
                     }
-
-                }              
-                if(is_callable($middleware)) {
-                    $middleware = \Closure::fromCallable(callback: $middleware);
+                } else {
+                    throw new \Scrawler\Exception\InvalidMiddlewareException('Middleware class does not exist');
                 }
-                $this->validateClosure($middleware);
-                $validated[] = $middleware;
             }
+            $middleware = \Closure::fromCallable(callback: $middleware);
+            $this->validateClosure($middleware);
+            $validated[] = $middleware;
         }
+
+
 
         return $validated;
     }
 
 
-    private function validateClosure(\Closure $middleware): void{
+    private function validateClosure(\Closure $middleware): void
+    {
         $refFunction = new \ReflectionFunction($middleware);
         $parameters = $refFunction->getParameters();
         foreach ($parameters as $parameter) {
-           if($parameter->getName() == 'request' && $parameter->getType() != 'Scrawler\Http\Request') {
-               throw new \Scrawler\Exception\InvalidMiddlewareException('First parameter of middleware must be of type Scrawler\Http\Request');
-           } 
-           if($parameter->getName() == 'next' && $parameter->getType() != 'Closure') {
-               throw new \Scrawler\Exception\InvalidMiddlewareException('Second parameter of middleware must be of type Closure');
-           }
-           if($parameter->getName() != 'request' && $parameter->getName() != 'next' ) {
-                 throw new \Scrawler\Exception\InvalidMiddlewareException('Invalid parameter name in middleware');
-           }
+            if ($parameter->getName() == 'request' && $parameter->getType() != 'Scrawler\Http\Request') {
+                throw new \Scrawler\Exception\InvalidMiddlewareException('First parameter of middleware must be of type Scrawler\Http\Request');
+            }
+            if ($parameter->getName() == 'next' && $parameter->getType() != 'Closure') {
+                throw new \Scrawler\Exception\InvalidMiddlewareException('Second parameter of middleware must be of type Closure');
+            }
+            if ($parameter->getName() != 'request' && $parameter->getName() != 'next') {
+                throw new \Scrawler\Exception\InvalidMiddlewareException('Invalid parameter name in middleware');
+            }
         }
     }
 
@@ -86,7 +84,8 @@ final class Pipeline
      * @param array<\Closure> $middlewares
      * @return \Scrawler\Pipeline
      */
-    public function middleware(array $middlewares): self{
+    public function middleware(array $middlewares): self
+    {
         $this->middlewares = $middlewares;
         return $this;
     }
@@ -105,12 +104,12 @@ final class Pipeline
 
         $middlewares = array_reverse($this->middlewares);
 
-       
+
         $completePipeline = array_reduce($middlewares, function ($nextMiddleware, $middleware) {
             return $this->createMiddleware($nextMiddleware, $middleware);
         }, $coreFunction);
 
- 
+
         return $completePipeline($object);
     }
 
@@ -135,7 +134,7 @@ final class Pipeline
      * @param  \Closure $middleware
      * @return \Closure
      */
-    private function createMiddleware(\Closure $nextMiddleware,\Closure $middleware): \Closure
+    private function createMiddleware(\Closure $nextMiddleware, \Closure $middleware): \Closure
     {
         return function ($object) use ($nextMiddleware, $middleware) {
             return $middleware($object, $nextMiddleware);
