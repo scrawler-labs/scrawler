@@ -13,6 +13,12 @@ it('tests for url() function', function () {
     expect(url('/test'))->toBe('http://localhost/test');
 });
 
+it('tests for url() function with https', function () {
+    app()->config()->set('https',true);
+    expect(url('/test'))->toBe('https://localhost/test');
+});
+
+
 it('tests for env() function', function () {
     $_ENV['test'] = 'test';
     expect(env('test'))->toBe('test');

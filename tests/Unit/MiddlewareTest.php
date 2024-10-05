@@ -29,6 +29,28 @@ it('tests for middlewareInterface ', function () {
     expect($response->getContent())->toBe('Overtaken by middleware');
 });
 
+it('tests for middlewareInterface failure', function () {
+
+    $app = new \Scrawler\App();
+    $app->middleware(\Tests\Middleware\TestError::class);
+    $request = \Scrawler\Http\Request::create(
+        '/',
+        'GET',
+    );
+    $response = $app->dispatch($request);
+})->throws(\Scrawler\Exception\InvalidMiddlewareException::class);
+
+it('tests for middlewareInterface class do not exist', function () {
+
+    $app = new \Scrawler\App();
+    $app->middleware(\Tests\Middleware\Unknown::class);
+    $request = \Scrawler\Http\Request::create(
+        '/',
+        'GET',
+    );
+    $response = $app->dispatch($request);
+})->throws(\Scrawler\Exception\InvalidMiddlewareException::class);
+
 it('test for invalid middleware extra parameter',function(){
     $app = new \Scrawler\App();
     $app->middleware(function (\Scrawler\Http\Request $request,\Closure $next,\Scrawler\Http\Response $response) {
