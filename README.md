@@ -7,7 +7,7 @@
 </a>
 [![Codecov](https://img.shields.io/codecov/c/gh/scrawler-labs/app?style=flat-square)](https://app.codecov.io/gh/scrawler-labs/app)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/scrawler-labs/app/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/scrawler-labs/app/?branch=main)
-<a href="[https://phpstan.org/](https://github.com/scrawler-labs/app/actions/workflows/main.yml)"><img src="https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat" alt="PHPStan Enabled"></a>
+<a href="[https://github.com/scrawler-labs/app/actions/workflows/main.yml](https://github.com/scrawler-labs/app/actions/workflows/main.yml)"><img src="https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat" alt="PHPStan Enabled"></a>
 [![Packagist Version](https://img.shields.io/packagist/v/scrawler/app?style=flat-square)](https://packagist.org/packages/scrawler/app)
 [![Packagist License](https://img.shields.io/packagist/l/scrawler/app?style=flat-square)](https://packagist.org/packages/scrawler/app)
 
