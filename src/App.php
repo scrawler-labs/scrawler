@@ -228,7 +228,7 @@ class App
 
             if (is_array($content)) {
                 $this->config()->set('api', true);
-                $response->json(\json_encode($content));
+                $response->json($content);
 
             } else {
                 if ($this->config()->get('api')) {
