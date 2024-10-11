@@ -7,7 +7,7 @@ use Scrawler\Interfaces\MiddlewareInterface;
 class Test implements MiddlewareInterface
 {
     #[\Override]
-    public function run(\Scrawler\Http\Request $request, \Closure $next)
+    public function run(\Scrawler\Http\Request $request, \Closure $next): \Scrawler\Http\Response
     {
         $response = $next($request);
         $response->setStatusCode(200);
