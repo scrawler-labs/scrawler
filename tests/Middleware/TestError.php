@@ -1,6 +1,6 @@
 <?php
+
 namespace Tests\Middleware;
-use Scrawler\Interfaces\MiddlewareInterface;
 
 class TestError
 {
@@ -9,6 +9,7 @@ class TestError
         $response = $next($request);
         $response->setStatusCode(200);
         $response->setContent('Overtaken by middleware');
+
         return $response;
     }
 }

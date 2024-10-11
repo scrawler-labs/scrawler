@@ -31,7 +31,8 @@
     },
     "require-dev": {
         "pestphp/pest": "^3.2",
-        "phpstan/phpstan": "^1.12"
+        "phpstan/phpstan": "^1.12",
+        "rector/rector": "^1.2"
     },
     "config": {
         "allow-plugins": {
