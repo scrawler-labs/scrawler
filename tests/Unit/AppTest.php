@@ -14,12 +14,12 @@ it('tests if registerAutoRoute() works', function (): void {
 it('test container() function', function (): void {
     $app = new Scrawler\App();
     $container = $app->container();
-    expect($container)->toBeInstanceOf(\DI\Container::class);
+    expect($container)->toBeInstanceOf(DI\Container::class);
 });
 
 it('tests if get() works', function (): void {
     $app = new Scrawler\App();
-    $app->get('/test', fn(): string => 'Hello World');
+    $app->get('/test', fn (): string => 'Hello World');
     $request = Scrawler\Http\Request::create(
         '/test',
         'GET',
@@ -30,7 +30,7 @@ it('tests if get() works', function (): void {
 
 it('tests if post() works', function (): void {
     $app = new Scrawler\App();
-    $app->post('/test/post', fn(): string => 'Hello World');
+    $app->post('/test/post', fn (): string => 'Hello World');
     $request = Scrawler\Http\Request::create(
         '/test/post',
         'POST',
@@ -41,7 +41,7 @@ it('tests if post() works', function (): void {
 
 it('tests if put() works', function (): void {
     $app = new Scrawler\App();
-    $app->put('/test/put', fn(): string => 'Hello World');
+    $app->put('/test/put', fn (): string => 'Hello World');
     $request = Scrawler\Http\Request::create(
         '/test/put',
         'PUT',
@@ -52,7 +52,7 @@ it('tests if put() works', function (): void {
 
 it('tests if delete() works', function (): void {
     $app = new Scrawler\App();
-    $app->delete('/test/delete', fn(): string => 'Hello World');
+    $app->delete('/test/delete', fn (): string => 'Hello World');
     $request = Scrawler\Http\Request::create(
         '/test/delete',
         'DELETE',
@@ -63,7 +63,7 @@ it('tests if delete() works', function (): void {
 
 it('tests if all() works', function (): void {
     $app = new Scrawler\App();
-    $app->all('/test/all', fn(): string => 'Hello World');
+    $app->all('/test/all', fn (): string => 'Hello World');
     $request = Scrawler\Http\Request::create(
         '/test/all',
         'GET',
@@ -81,7 +81,7 @@ it('tests if all() works', function (): void {
 
 it('tests if register handler() works', function (): void {
     $app = new Scrawler\App();
-    $app->handler('404', fn(): string => 'Its a custom 404');
+    $app->handler('404', fn (): string => 'Its a custom 404');
     $request = Scrawler\Http\Request::create(
         '/test/something',
         'GET',
@@ -92,7 +92,7 @@ it('tests if register handler() works', function (): void {
 
 it('tests if  getHandler() works', function (): void {
     $app = new Scrawler\App();
-    $app->handler('404', fn(): string => 'Its a custom 404');
+    $app->handler('404', fn (): string => 'Its a custom 404');
     $handler = $app->getHandler('404');
 
     expect($handler)->toBeCallable();
@@ -225,7 +225,7 @@ it('tests for MethodNotAllowedException', function (): void {
 it('tests for json response in api mode ', function (): void {
     $app = new Scrawler\App();
     $app->config()->set('api', true);
-    $app->get('/test', fn(): array => ['data' => 'Hello World']);
+    $app->get('/test', fn (): array => ['data' => 'Hello World']);
     $request = Scrawler\Http\Request::create(
         '/test',
         'GET',
@@ -233,7 +233,7 @@ it('tests for json response in api mode ', function (): void {
     $app->register('request', $request);
     $response = $app->dispatch();
     expect($response->getContent())->toBe('{"data":"Hello World"}');
-    $app->get('/test/json', fn() => json_encode(['data' => 'Hello World']));
+    $app->get('/test/json', fn () => json_encode(['data' => 'Hello World']));
     $request = Scrawler\Http\Request::create(
         '/test/json',
         'GET',
@@ -244,7 +244,7 @@ it('tests for json response in api mode ', function (): void {
 
 it('tests when response is already a response object', function (): void {
     $app = new Scrawler\App();
-    $app->get('/test', function (): \Scrawler\Http\Response {
+    $app->get('/test', function (): Scrawler\Http\Response {
         $response = new Scrawler\Http\Response();
         $response->setContent('Hello World');
 
@@ -266,27 +266,27 @@ it('tests function being called on __call()', function (): void {
 
 it('tests for make() function', function (): void {
     $app = new Scrawler\App();
-    $app->register('test', \Tests\Service\Test::class);
-    $test = $app->make(\Tests\Service\Test::class);
+    $app->register('test', Tests\Service\Test::class);
+    $test = $app->make(Tests\Service\Test::class);
     $test = $test->test();
     expect($test)->toBe('test function works');
 });
 
 it('tests if call() works', function (): void {
     $app = new Scrawler\App();
-    $result = $app->call(fn(): string => 'test function works');
+    $result = $app->call(fn (): string => 'test function works');
     expect($result)->toBe('test function works');
 });
 
 it('tests getVersion function', function (): void {
     $app = new Scrawler\App();
     $version = $app->getVersion();
-    $this->assertStringContainsString('2024', $version);
+    $this->assertStringContainsString('.x', $version);
 });
 
 it('tests for run() function ', function (): void {
     $app = new Scrawler\App();
-    $app->get('/test', function (): \Scrawler\Http\Response {
+    $app->get('/test', function (): Scrawler\Http\Response {
         $response = new Scrawler\Http\Response();
         $response->setContent('Hello World');
 
@@ -302,4 +302,3 @@ it('tests for run() function ', function (): void {
     $output = ob_get_clean();
     expect($output)->toBe('Hello World');
 });
-

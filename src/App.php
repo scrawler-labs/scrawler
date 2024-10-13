@@ -36,7 +36,7 @@ class App
      */
     private array $handler = [];
 
-    private string $version = '03082024';
+    private string $version = '2.x';
 
     public function __construct()
     {
@@ -105,10 +105,8 @@ class App
 
     /**
      * Get the handler by key.
-     *
-     * @param string $key
      */
-    public function getHandler($key): \Closure|callable
+    public function getHandler(string $key): \Closure|callable
     {
         return $this->handler[$key];
     }
@@ -230,10 +228,9 @@ class App
     /**
      * Magic method to call container functions.
      *
-     * @param string       $function
      * @param array<mixed> $args
      */
-    public function __call($function, $args): mixed
+    public function __call(string $function, mixed $args): mixed
     {
         try {
             if (!$this->container->has($function) && function_exists($function)) {
