@@ -25,7 +25,7 @@ class App
     use Traits\Container;
     use Traits\Router;
 
-    public static App $app;
+    public static ?App $app = null;
 
     private Router $router;
 
@@ -95,11 +95,13 @@ class App
      */
     public function handler(string $name, \Closure|callable $callback): void
     {
+        //@codeCoverageIgnoreStart
         $callback = \Closure::fromCallable(callback: $callback);
         if ('exception' === $name) {
             set_error_handler($callback);
             set_exception_handler($callback);
         }
+        //@codeCoverageIgnoreEnd
         $this->handler[$name] = $callback;
     }
 
