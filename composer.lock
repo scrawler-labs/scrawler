@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0420e6bd599889ff8658bda5fd2ff7d0",
+    "content-hash": "00b473859f782ceabdac3bd9c5185d97",
     "packages": [
         {
             "name": "graham-campbell/result-type",
@@ -496,23 +496,28 @@
         },
         {
             "name": "scrawler/http",
-            "version": "v1.1.4",
+            "version": "v2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scrawler-labs/http.git",
-                "reference": "01969fc4bb5c1e03b32f494a143d852416187d3a"
+                "reference": "45a3446dcd0cfe2ed70a04b9198fa68eccbfcab0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scrawler-labs/http/zipball/01969fc4bb5c1e03b32f494a143d852416187d3a",
-                "reference": "01969fc4bb5c1e03b32f494a143d852416187d3a",
+                "url": "https://api.github.com/repos/scrawler-labs/http/zipball/45a3446dcd0cfe2ed70a04b9198fa68eccbfcab0",
+                "reference": "45a3446dcd0cfe2ed70a04b9198fa68eccbfcab0",
                 "shasum": ""
             },
             "require": {
-                "symfony/http-foundation": "^6.3"
+                "symfony/http-foundation": "^6.3",
+                "thecodingmachine/safe": "^2.5"
             },
             "require-dev": {
-                "pestphp/pest": "^2.25"
+                "pestphp/pest": "^2.25",
+                "phpstan/phpstan": "^1.12",
+                "rector/rector": "^1.2",
+                "scrawler/database": "^1.0",
+                "thecodingmachine/phpstan-safe-rule": "^1.2"
             },
             "type": "library",
             "autoload": {
@@ -525,7 +530,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "Apache-2.0"
+                "MIT"
             ],
             "authors": [
                 {
@@ -538,22 +543,22 @@
             "description": "Http component for scrawler framework",
             "support": {
                 "issues": "https://github.com/scrawler-labs/http/issues",
-                "source": "https://github.com/scrawler-labs/http/tree/v1.1.4"
+                "source": "https://github.com/scrawler-labs/http/tree/v2.0.2"
             },
-            "time": "2024-09-30T07:51:04+00:00"
+            "time": "2024-10-13T07:52:14+00:00"
         },
         {
             "name": "scrawler/router",
-            "version": "v4.2.1",
+            "version": "v4.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scrawler-labs/router.git",
-                "reference": "6b84cd3403945871fb9b3fd5ee17b017bc1c0f97"
+                "reference": "99921ee5c582093bf0c953024466dc34388fad61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scrawler-labs/router/zipball/6b84cd3403945871fb9b3fd5ee17b017bc1c0f97",
-                "reference": "6b84cd3403945871fb9b3fd5ee17b017bc1c0f97",
+                "url": "https://api.github.com/repos/scrawler-labs/router/zipball/99921ee5c582093bf0c953024466dc34388fad61",
+                "reference": "99921ee5c582093bf0c953024466dc34388fad61",
                 "shasum": ""
             },
             "require": {
@@ -597,9 +602,9 @@
             ],
             "support": {
                 "issues": "https://github.com/scrawler-labs/router/issues",
-                "source": "https://github.com/scrawler-labs/router/tree/v4.2.1"
+                "source": "https://github.com/scrawler-labs/router/tree/v4.2.2"
             },
-            "time": "2024-10-17T11:04:50+00:00"
+            "time": "2024-10-18T09:07:58+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
