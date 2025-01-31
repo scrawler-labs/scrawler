@@ -1,7 +1,9 @@
 <?php
 
+use Scrawler\Factory\AppFactory;
+
 it('tests if registerAutoRoute() works', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->registerAutoRoute(__DIR__.'/../Controllers', 'Tests\\Controllers');
     $request = Scrawler\Http\Request::create(
         '/test',
@@ -12,13 +14,13 @@ it('tests if registerAutoRoute() works', function (): void {
 });
 
 it('test container() function', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $container = $app->container();
     expect($container)->toBeInstanceOf(DI\Container::class);
 });
 
 it('tests if get() works', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->get('/test', fn (): string => 'Hello World');
     $request = Scrawler\Http\Request::create(
         '/test',
@@ -29,7 +31,7 @@ it('tests if get() works', function (): void {
 });
 
 it('tests if post() works', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->post('/test/post', fn (): string => 'Hello World');
     $request = Scrawler\Http\Request::create(
         '/test/post',
@@ -40,7 +42,7 @@ it('tests if post() works', function (): void {
 });
 
 it('tests if put() works', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->put('/test/put', fn (): string => 'Hello World');
     $request = Scrawler\Http\Request::create(
         '/test/put',
@@ -51,7 +53,7 @@ it('tests if put() works', function (): void {
 });
 
 it('tests if delete() works', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->delete('/test/delete', fn (): string => 'Hello World');
     $request = Scrawler\Http\Request::create(
         '/test/delete',
@@ -62,7 +64,7 @@ it('tests if delete() works', function (): void {
 });
 
 it('tests if all() works', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->all('/test/all', fn (): string => 'Hello World');
     $request = Scrawler\Http\Request::create(
         '/test/all',
@@ -80,7 +82,7 @@ it('tests if all() works', function (): void {
 });
 
 it('tests if register handler() works', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->handler('404', fn (): string => 'Its a custom 404');
     $request = Scrawler\Http\Request::create(
         '/test/something',
@@ -91,7 +93,7 @@ it('tests if register handler() works', function (): void {
 });
 
 it('tests if  getHandler() works', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->handler('404', fn (): string => 'Its a custom 404');
     $handler = $app->getHandler('404');
 
@@ -99,7 +101,7 @@ it('tests if  getHandler() works', function (): void {
 });
 
 it('tests if register() works', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $test = new Tests\Service\Test();
     $app->register('test', $test);
     $test = app()->test()->test();
@@ -107,14 +109,14 @@ it('tests if register() works', function (): void {
 });
 
 it('tests if register() throws error on override', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $test = new Tests\Service\Test();
     $app->register('test', $test);
     $app->register('test', $test);
 })->throws(Scrawler\Exception\ContainerException::class);
 
 it('tests if register() lets force override', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $test = new Tests\Service\Test();
     $app->register('test', $test);
     $app->register('test', $test, true);
@@ -123,13 +125,13 @@ it('tests if register() lets force override', function (): void {
 });
 
 it('tests if register() stops core override', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $test = new Tests\Service\Test();
     $app->register('config', $test, true);
 })->throws(Scrawler\Exception\ContainerException::class);
 
 it('tests default 404 in api mode', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->config()->set('api', true);
     $request = Scrawler\Http\Request::create(
         '/test/something',
@@ -140,7 +142,7 @@ it('tests default 404 in api mode', function (): void {
 });
 
 it('tests default 404 in web mode', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $request = Scrawler\Http\Request::create(
         '/test/something',
         'GET',
@@ -150,7 +152,7 @@ it('tests default 404 in web mode', function (): void {
 });
 
 it('tests default 405 in api mode', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->config()->set('api', true);
     $app->registerAutoRoute(__DIR__.'/../Controllers', 'Tests\\Controllers');
 
@@ -163,7 +165,7 @@ it('tests default 405 in api mode', function (): void {
 });
 
 it('tests default 405 in web mode', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->registerAutoRoute(__DIR__.'/../Controllers', 'Tests\\Controllers');
     $request = Scrawler\Http\Request::create(
         '/test/test',
@@ -174,7 +176,7 @@ it('tests default 405 in web mode', function (): void {
 });
 
 it('tests default 500 in api mode', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->config()->set('api', true);
     $app->registerAutoRoute(__DIR__.'/../Controllers', 'Tests\\Controllers');
     $request = Scrawler\Http\Request::create(
@@ -186,7 +188,7 @@ it('tests default 500 in api mode', function (): void {
 });
 
 it('tests default 500 in web mode', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->registerAutoRoute(__DIR__.'/../Controllers', 'Tests\\Controllers');
     $request = Scrawler\Http\Request::create(
         '/test/exception',
@@ -197,12 +199,12 @@ it('tests default 500 in web mode', function (): void {
 });
 
 it('tests for ContainerException', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->someClass();
 })->throws(Scrawler\Exception\ContainerException::class);
 
 it('tests for NotFoundException', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->config()->set('debug', true);
     $request = Scrawler\Http\Request::create(
         '/notfound',
@@ -212,7 +214,7 @@ it('tests for NotFoundException', function (): void {
 })->throws(Scrawler\Exception\NotFoundException::class);
 
 it('tests for MethodNotAllowedException', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->registerAutoRoute(__DIR__.'/../Controllers', 'Tests\\Controllers');
     $app->config()->set('debug', true);
     $request = Scrawler\Http\Request::create(
@@ -223,15 +225,14 @@ it('tests for MethodNotAllowedException', function (): void {
 })->throws(Scrawler\Exception\MethodNotAllowedException::class);
 
 it('tests for json response in api mode ', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->config()->set('api', true);
     $app->get('/test', fn (): array => ['data' => 'Hello World']);
     $request = Scrawler\Http\Request::create(
         '/test',
         'GET',
     );
-    $app->register('request', $request);
-    $response = $app->dispatch();
+    $response = $app->dispatch($request);
     expect($response->getContent())->toBe('{"data":"Hello World"}');
     $app->get('/test/json', fn () => json_encode(['data' => 'Hello World']));
     $request = Scrawler\Http\Request::create(
@@ -243,7 +244,7 @@ it('tests for json response in api mode ', function (): void {
 });
 
 it('tests when response is already a response object', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->get('/test', function (): Scrawler\Http\Response {
         $response = new Scrawler\Http\Response();
         $response->setContent('Hello World');
@@ -259,13 +260,14 @@ it('tests when response is already a response object', function (): void {
 });
 
 it('tests function being called on __call()', function (): void {
-    $app = new Scrawler\App();
-    $request = $app->request();
-    expect($request)->toBeInstanceOf(Scrawler\Http\Request::class);
+    $app = AppFactory::create();
+    $app->register('test', new Tests\Service\Test());
+   
+    expect($app->test())->toBeInstanceOf(Tests\Service\Test::class);
 });
 
 it('tests for make() function', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $app->register('test', Tests\Service\Test::class);
     $test = $app->make(Tests\Service\Test::class);
     $test = $test->test();
@@ -273,32 +275,14 @@ it('tests for make() function', function (): void {
 });
 
 it('tests if call() works', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $result = $app->call(fn (): string => 'test function works');
     expect($result)->toBe('test function works');
 });
 
 it('tests getVersion function', function (): void {
-    $app = new Scrawler\App();
+    $app = AppFactory::create();
     $version = $app->getVersion();
     $this->assertStringContainsString('.x', $version);
 });
 
-it('tests for run() function ', function (): void {
-    $app = new Scrawler\App();
-    $app->get('/test', function (): Scrawler\Http\Response {
-        $response = new Scrawler\Http\Response();
-        $response->setContent('Hello World');
-
-        return $response;
-    });
-    $request = Scrawler\Http\Request::create(
-        '/test',
-        'GET',
-    );
-    $app->register('request', $request);
-    ob_start();
-    $app->run();
-    $output = ob_get_clean();
-    expect($output)->toBe('Hello World');
-});

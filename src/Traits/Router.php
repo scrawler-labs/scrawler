@@ -17,7 +17,7 @@ trait Router
      */
     public function registerAutoRoute(string $dir, string $namespace): void
     {
-        $this->router->register($dir, $namespace);
+        $this->router()->register($dir, $namespace);
     }
 
     /**
@@ -26,7 +26,7 @@ trait Router
     public function get(string $route, \Closure|callable $callback): void
     {
         $callback = \Closure::fromCallable(callback: $callback);
-        $this->router->get($route, $callback);
+        $this->router()->get($route, $callback);
     }
 
     /**
@@ -35,7 +35,7 @@ trait Router
     public function post(string $route, \Closure|callable $callback): void
     {
         $callback = \Closure::fromCallable(callback: $callback);
-        $this->router->post($route, $callback);
+        $this->router()->post($route, $callback);
     }
 
     /**
@@ -44,7 +44,7 @@ trait Router
     public function put(string $route, \Closure|callable $callback): void
     {
         $callback = \Closure::fromCallable(callback: $callback);
-        $this->router->put($route, $callback);
+        $this->router()->put($route, $callback);
     }
 
     /**
@@ -53,7 +53,7 @@ trait Router
     public function delete(string $route, \Closure|callable $callback): void
     {
         $callback = \Closure::fromCallable(callback: $callback);
-        $this->router->delete($route, $callback);
+        $this->router()->delete($route, $callback);
     }
 
     /**

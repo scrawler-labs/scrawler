@@ -12,7 +12,10 @@ declare(strict_types=1);
 
 namespace Scrawler;
 
+use Scrawler\Http\Request;
+use Scrawler\Http\Response;
 use Scrawler\Router\Router;
+use Scrawler\Factory\AppFactory;
 
 /**
  * @method \PHLAK\Config\Config    config()
@@ -25,9 +28,6 @@ class App
     use Traits\Container;
     use Traits\Router;
 
-    public static ?App $app = null;
-
-    private Router $router;
 
     private \DI\Container $container;
 
@@ -36,15 +36,14 @@ class App
      */
     private array $handler = [];
 
+    private Request $request;
+    private Response $response;
+
     private string $version = '2.x';
 
-    public function __construct()
+    public function __construct(\DI\Container $container)
     {
-        self::$app = $this;
-        $this->router = new Router();
-        $this->container = new \DI\Container();
-        $this->register('config', value: $this->create(\PHLAK\Config\Config::class));
-        $this->register('pipeline', value: $this->create(Pipeline::class));
+        $this->container = $container;
         $this->config()->set('debug', false);
         $this->config()->set('api', false);
         $this->config()->set('middlewares', []);
@@ -72,13 +71,19 @@ class App
         });
     }
 
-    public static function engine(): self
+    public function request(): Request
     {
-        if (null == self::$app) {
-            self::$app = new self();
-        }
+        return $this->request;
+    }
 
-        return self::$app;
+    public function response(): Response
+    {
+        return $this->response;
+    }
+
+    public static function engine(): App
+    {
+        return AppFactory::getApp();
     }
 
     /**
@@ -119,11 +124,14 @@ class App
     public function dispatch(?Http\Request $request = null): Http\Response
     {
         if (is_null($request)) {
-            $request = $this->request();
+            $request = Http\Request::createFromGlobals();
         }
+
+        $this->request = $request;
+
         $pipeline = new Pipeline();
 
-        return $pipeline->middleware($this->config()->get('middlewares'))->run($request, fn ($request): \Scrawler\Http\Response => $this->dispatchRouter($request));
+        return $pipeline->middleware($this->config()->get('middlewares'))->run($request, fn ($request): Response => $this->dispatchRouter($request));
     }
 
     /**
@@ -133,21 +141,22 @@ class App
     {
         $httpMethod = $request->getMethod();
         $uri = $request->getPathInfo();
-        $response = $this->makeResponse('', 200);
+        $this->response = $this->makeResponse('', 200);
+
 
         try {
-            [$status, $handler, $args, $debug] = $this->router->dispatch($httpMethod, $uri);
+            [$status, $handler, $args, $debug] = $this->router()->dispatch($httpMethod, $uri);
             switch ($status) {
                 case Router::NOT_FOUND:
-                    $response = $this->handleNotFound($debug);
+                    $this->response = $this->handleNotFound($debug);
                     break;
                 case Router::METHOD_NOT_ALLOWED:
-                    $response = $this->handleMethodNotAllowed($debug);
+                    $this->response = $this->handleMethodNotAllowed($debug);
                     break;
                 case Router::FOUND:
                     // call the handler
-                    $response = $this->container->call($handler, $args);
-                    $response = $this->makeResponse($response, 200);
+                    $response = $this->container->call($handler, ['request' => $request, ...$args]);
+                    $this->response = $this->makeResponse($this->response, 200);
                     // Send Response
             }
         } catch (\Exception $e) {
@@ -155,7 +164,7 @@ class App
                 throw $e;
             } else {
                 $response = $this->container->call($this->handler['500']);
-                $response = $this->makeResponse($response, 500);
+                $this->response = $this->makeResponse($response, 500);
             }
         }
 
@@ -209,16 +218,16 @@ class App
     private function makeResponse(array|string|Http\Response $content, int $status = 200): Http\Response
     {
         if (!$content instanceof Http\Response) {
-            $response = new Http\Response();
-            $response->setStatusCode($status);
+            $this->response = new Http\Response();
+            $this->response->setStatusCode($status);
 
             if (is_array($content)) {
                 $this->config()->set('api', true);
-                $response->json($content);
+                $this->response->json($content);
             } elseif ($this->config()->get('api')) {
-                $response->json($content);
+                $this->response->json($content);
             } else {
-                $response->setContent($content);
+                $this->response->setContent($content);
             }
         } else {
             $response = $content;

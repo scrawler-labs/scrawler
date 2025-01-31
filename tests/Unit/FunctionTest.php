@@ -21,7 +21,6 @@ it('tests for url() function with https', function (): void {
 it('tests for env() function', function (): void {
     $_ENV['test'] = 'test';
     expect(env('test'))->toBe('test');
-    request()->server->set('test_s', 'test_s');
     expect(env('test_s'))->toBe('test_s');
     expect(env('random'))->toBe(null);
     putenv('test_put=test_put');
