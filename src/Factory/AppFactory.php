@@ -5,7 +5,7 @@ use Scrawler\App;
 
 class AppFactory{
 
-    private static $container;
+    private static ?\DI\Container $container = null;
 
     public static function create(): App{
         if(is_null(self::$container)){
@@ -21,9 +21,9 @@ class AppFactory{
     }
 
     public static function getApp(): App{
-        if(!self::$container->has('app')){
+        if(is_null(self::$container) || !self::$container->has('app')){
             self::create();
         }
-        return self::$container->get('app');
+        return self::$container instanceof \DI\Container ? self::$container->get('app') : null;
     }
 }

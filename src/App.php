@@ -22,7 +22,7 @@ use Scrawler\Factory\AppFactory;
  * @method \Scrawler\Http\Request  request()
  * @method \Scrawler\Http\Response response()
  * @method \Scrawler\Pipeline      pipeline()
- * @method \Scrawler\Router        router()
+ * @method \Scrawler\Router\Router router()
  */
 class App
 {
@@ -122,7 +122,7 @@ class App
     /**
      * Dispatch the request to the router and create response.
      */
-    public function dispatch(?Http\Request $request = null,Http\Response $response = null): Http\Response
+    public function dispatch(?Http\Request $request = null, Http\Response $response = null): Http\Response
     {
         if (is_null($request)) {
             $request = Http\Request::createFromGlobals();
@@ -136,7 +136,7 @@ class App
 
         $pipeline = new Pipeline();
 
-        return $pipeline->middleware($this->config()->get('middlewares'))->run($request, fn ($request): Response => $this->dispatchRouter($request));
+        return $pipeline->middleware($this->config()->get('middlewares'))->run($request, fn($request): Response => $this->dispatchRouter($request));
     }
 
     /**
@@ -162,7 +162,7 @@ class App
                     // call the handler
                     $response = $this->container->call($handler, ['request' => $request, ...$args]);
                     $this->response = $this->makeResponse($response, 200);
-                    // Send Response
+                // Send Response
             }
         } catch (\Exception $e) {
             if ($this->config()->get('debug', false)) {
@@ -209,7 +209,7 @@ class App
     /**
      * Dipatch request and send response on screen.
      */
-    public function run(Http\Request $request = null,Http\Response $response = null): void
+    public function run(Http\Request $request = null, Http\Response $response = null): void
     {
         $response = $this->dispatch($request, $response);
         $response->send();
