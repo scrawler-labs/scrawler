@@ -42,6 +42,7 @@ it('tests for middlewareInterface failure', function (): void {
 
 it('tests for middlewareInterface class do not exist', function (): void {
     $app = AppFactory::create();
+    // @phpstan-ignore-next-line
     $app->middleware(Tests\Middleware\Unknown::class);
     $request = Scrawler\Http\Request::create(
         '/',

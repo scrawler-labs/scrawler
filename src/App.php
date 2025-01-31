@@ -22,6 +22,7 @@ use Scrawler\Factory\AppFactory;
  * @method \Scrawler\Http\Request  request()
  * @method \Scrawler\Http\Response response()
  * @method \Scrawler\Pipeline      pipeline()
+ * @method \Scrawler\Router        router()
  */
 class App
 {
