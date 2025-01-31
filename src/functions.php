@@ -37,7 +37,14 @@ if (!function_exists('url')) {
     function url(string $path = ''): string
     {
         if (Scrawler\App::engine()->config()->has('https') && Scrawler\App::engine()->config()->get('https')) {
+            if(Scrawler\App::engine()->request()->getHttpHost() == null || Scrawler\App::engine()->request()->getHttpHost() == ':'){
+                return 'https://localhost'.Scrawler\App::engine()->request()->getBasePath().$path;
+            }
             return 'https://'.Scrawler\App::engine()->request()->getHttpHost().Scrawler\App::engine()->request()->getBasePath().$path;
+        }
+
+        if(Scrawler\App::engine()->request()->getHttpHost() == null || Scrawler\App::engine()->request()->getHttpHost() == ':'){
+            return 'http://localhost'.Scrawler\App::engine()->request()->getBasePath().$path;
         }
 
         return Scrawler\App::engine()->request()->getSchemeAndHttpHost().Scrawler\App::engine()->request()->getBasePath().$path;
@@ -59,8 +66,8 @@ if (!function_exists('env')) {
             return getenv($key);
         }
 
-        if (request()->server->has($key)) {
-            return request()->server->get($key);
+        if (app()->request()->server->has($key)) {
+            return app()->request()->server->get($key);
         }
 
         return null;

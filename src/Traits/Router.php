@@ -62,6 +62,6 @@ trait Router
     public function all(string $route, \Closure|callable $callback): void
     {
         $callback = \Closure::fromCallable(callback: $callback);
-        $this->router->all($route, $callback);
+        $this->router()->all($route, $callback);
     }
 }

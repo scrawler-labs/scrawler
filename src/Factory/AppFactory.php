@@ -14,6 +14,7 @@ class AppFactory{
             self::$container->set('pipeline', new \Scrawler\Pipeline());
             self::$container->set('router', new \Scrawler\Router\Router());
         }
+    
         $app = new App(self::$container);
         self::$container->set('app', fn(): App=> $app);
         return $app;

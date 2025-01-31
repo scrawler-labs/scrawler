@@ -121,13 +121,17 @@ class App
     /**
      * Dispatch the request to the router and create response.
      */
-    public function dispatch(?Http\Request $request = null): Http\Response
+    public function dispatch(?Http\Request $request = null,Http\Response $response = null): Http\Response
     {
         if (is_null($request)) {
             $request = Http\Request::createFromGlobals();
         }
+        if (is_null($response)) {
+            $response = new Http\Response();
+        }
 
         $this->request = $request;
+        $this->response = $response;
 
         $pipeline = new Pipeline();
 
@@ -156,7 +160,7 @@ class App
                 case Router::FOUND:
                     // call the handler
                     $response = $this->container->call($handler, ['request' => $request, ...$args]);
-                    $this->response = $this->makeResponse($this->response, 200);
+                    $this->response = $this->makeResponse($response, 200);
                     // Send Response
             }
         } catch (\Exception $e) {
@@ -168,7 +172,7 @@ class App
             }
         }
 
-        return $response;
+        return $this->response;
     }
 
     /**
@@ -204,9 +208,9 @@ class App
     /**
      * Dipatch request and send response on screen.
      */
-    public function run(): void
+    public function run(Http\Request $request = null,Http\Response $response = null): void
     {
-        $response = $this->dispatch();
+        $response = $this->dispatch($request, $response);
         $response->send();
     }
 
@@ -218,7 +222,6 @@ class App
     private function makeResponse(array|string|Http\Response $content, int $status = 200): Http\Response
     {
         if (!$content instanceof Http\Response) {
-            $this->response = new Http\Response();
             $this->response->setStatusCode($status);
 
             if (is_array($content)) {
@@ -230,10 +233,10 @@ class App
                 $this->response->setContent($content);
             }
         } else {
-            $response = $content;
+            $this->response = $content;
         }
 
-        return $response;
+        return $this->response;
     }
 
     /**

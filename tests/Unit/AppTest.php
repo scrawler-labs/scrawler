@@ -103,8 +103,8 @@ it('tests if  getHandler() works', function (): void {
 it('tests if register() works', function (): void {
     $app = AppFactory::create();
     $test = new Tests\Service\Test();
-    $app->register('test', $test);
-    $test = app()->test()->test();
+    $app->register('testr', $test);
+    $test = app()->testr()->test();
     expect($test)->toBe('test function works');
 });
 
@@ -118,8 +118,8 @@ it('tests if register() throws error on override', function (): void {
 it('tests if register() lets force override', function (): void {
     $app = AppFactory::create();
     $test = new Tests\Service\Test();
-    $app->register('test', $test);
-    $app->register('test', $test, true);
+    $app->register('testo', $test);
+    $app->register('testo', $test, true);
     $test = app()->test()->test();
     expect($test)->toBe('test function works');
 });
@@ -261,14 +261,14 @@ it('tests when response is already a response object', function (): void {
 
 it('tests function being called on __call()', function (): void {
     $app = AppFactory::create();
-    $app->register('test', new Tests\Service\Test());
+    $app->register('testto', new Tests\Service\Test());
    
-    expect($app->test())->toBeInstanceOf(Tests\Service\Test::class);
+    expect($app->testto())->toBeInstanceOf(Tests\Service\Test::class);
 });
 
 it('tests for make() function', function (): void {
     $app = AppFactory::create();
-    $app->register('test', Tests\Service\Test::class);
+    $app->register('testi', Tests\Service\Test::class);
     $test = $app->make(Tests\Service\Test::class);
     $test = $test->test();
     expect($test)->toBe('test function works');
