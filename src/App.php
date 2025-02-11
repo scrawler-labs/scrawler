@@ -14,6 +14,7 @@ namespace Scrawler;
 
 use Scrawler\Http\Request;
 use Scrawler\Http\Response;
+use Scrawler\Http\RedirectResponse;
 use Scrawler\Router\Router;
 use Scrawler\Factory\AppFactory;
 
@@ -38,7 +39,7 @@ class App
     private array $handler = [];
 
     private Request $request;
-    private Response $response;
+    private Response|RedirectResponse $response;
 
     private string $version = '2.x';
 
@@ -77,7 +78,7 @@ class App
         return $this->request;
     }
 
-    public function response(): Response
+    public function response(): Response|RedirectResponse
     {
         return $this->response;
     }
@@ -122,7 +123,7 @@ class App
     /**
      * Dispatch the request to the router and create response.
      */
-    public function dispatch(?Http\Request $request = null, Http\Response $response = null): Http\Response
+    public function dispatch(?Http\Request $request = null, Http\Response $response = null): Http\Response|Http\RedirectResponse
     {
         if (is_null($request)) {
             $request = Http\Request::createFromGlobals();
@@ -136,13 +137,13 @@ class App
 
         $pipeline = new Pipeline();
 
-        return $pipeline->middleware($this->config()->get('middlewares'))->run($request, fn($request): Response => $this->dispatchRouter($request));
+        return $pipeline->middleware($this->config()->get('middlewares'))->run($request, fn($request): Response|RedirectResponse => $this->dispatchRouter($request));
     }
 
     /**
      * Dispatch the request to the router and create response.
      */
-    private function dispatchRouter(Http\Request $request): Http\Response
+    private function dispatchRouter(Http\Request $request): Http\Response|Http\RedirectResponse
     {
         $httpMethod = $request->getMethod();
         $uri = $request->getPathInfo();
@@ -220,9 +221,9 @@ class App
      *
      * @param array<string,mixed>|string|\Scrawler\Http\Response $content
      */
-    private function makeResponse(array|string|Http\Response $content, int $status = 200): Http\Response
+    private function makeResponse(array|string|Http\Response|Http\RedirectResponse $content, int $status = 200): Http\Response|Http\RedirectResponse
     {
-        if (!$content instanceof Http\Response) {
+        if (!$content instanceof Http\Response && !$content instanceof Http\RedirectResponse) {
             $this->response->setStatusCode($status);
 
             if (is_array($content)) {
