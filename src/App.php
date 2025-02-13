@@ -97,6 +97,24 @@ class App
     }
 
     /**
+     * Convert php errors to exceptions.
+     *
+     */
+    public function exception_error_handler(int $errno, string $errstr, string $errfile = null, int $errline)
+    {
+        if (!(error_reporting() & $errno)) {
+            // This error code is not included in error_reporting
+            return;
+        }
+        if ($errno === E_DEPRECATED || $errno === E_USER_DEPRECATED) {
+            // Do not throw an Exception for deprecation warnings as new or unexpected
+            // deprecations would break the application.
+            return;
+        }
+        throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+    }
+
+    /**
      * Register a new handler in scrawler
      * currently uselful hadlers are 404,405,500 and exception.
      */
@@ -105,7 +123,7 @@ class App
         //@codeCoverageIgnoreStart
         $callback = \Closure::fromCallable(callback: $callback);
         if ('exception' === $name) {
-            set_error_handler($callback);
+            set_error_handler([$this, 'exception_error_handler']);
             set_exception_handler($callback);
         }
         //@codeCoverageIgnoreEnd
