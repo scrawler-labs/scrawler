@@ -124,7 +124,7 @@ class App
         //@codeCoverageIgnoreStart
         $callback = \Closure::fromCallable(callback: $callback);
         if ('exception' === $name) {
-            set_error_handler([$this, 'exception_error_handler']);
+            set_error_handler( \Closure::fromCallable([$this, 'exception_error_handler']));
             set_exception_handler($callback);
         }
         //@codeCoverageIgnoreEnd
