@@ -97,9 +97,11 @@ class App
 
     /**
      * Convert php errors to exceptions.
+     * 
+     * @throws \ErrorException
      *
      */
-    public function exception_error_handler(int $errno, string $errstr, string $errfile = null, int $errline)
+    public function exception_error_handler(int $errno, string $errstr, string $errfile = null, int $errline): void
     {
         if (!(error_reporting() & $errno)) {
             // This error code is not included in error_reporting
