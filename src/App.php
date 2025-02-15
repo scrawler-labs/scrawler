@@ -44,6 +44,7 @@ class App
 
     public function __construct(\DI\Container $container)
     {
+        $this->response = new Response();
         $this->container = $container;
         $this->config()->set('debug', false);
         $this->config()->set('api', false);
