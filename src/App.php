@@ -292,7 +292,6 @@ class App
      */
     public function middleware(\Closure|callable|array|string $middlewares): void
     {
-        $this->config()->append('middlewares', $middlewares);
         $middlewares = $this->pipeline()->validateMiddleware(middlewares: $this->config()->get('middlewares'));
         $this->config()->set('middlewares', $middlewares);
     }
