@@ -50,26 +50,26 @@ class App
         $this->config()->set('api', false);
         $this->config()->set('middlewares', []);
 
-        $this->handler('404', function (): array|string {
+        $this->handler('404', function (): Response {
             if ($this->config()->get('api')) {
                 return $this->makeResponse(['status' => 404, 'msg' => '404 Not Found'], 404);
             }
             return $this->makeResponse('404 Not Found', 404);
         });
-        $this->handler('405', function (): array|string {
+        $this->handler('405', function (): Response {
             if ($this->config()->get('api')) {
                 return $this->makeResponse(['status' => 405, 'msg' => '405 Method Not Allowed'], 405);
             }
             return $this->makeResponse('405 Method Not Allowed', 405);
         });
-        $this->handler('500', function (): array|string {
+        $this->handler('500', function (): Response {
             if ($this->config()->get('api')) {
                 return $this->makeResponse(['status' => 500, 'msg' => '500 Internal Server Error'], 500);
             }
 
             return $this->makeResponse('500 Internal Server Error', 500);
         });
-        $this->handler('419', function (): array|string {
+        $this->handler('419', function (): Response {
             if ($this->config()->get('api')) {
                 return $this->makeResponse(['status' => 419, 'msg' => '419 Page Expired'], 419);
             }
