@@ -52,24 +52,29 @@ class App
 
         $this->handler('404', function (): array|string {
             if ($this->config()->get('api')) {
-                return ['status' => 404, 'msg' => '404 Not Found'];
+                return $this->makeResponse(['status' => 404, 'msg' => '404 Not Found'], 404);
             }
-
-            return '404 Not Found';
+            return $this->makeResponse('404 Not Found', 404);
         });
         $this->handler('405', function (): array|string {
             if ($this->config()->get('api')) {
-                return ['status' => 405, 'msg' => '405 Method Not Allowed'];
+                return $this->makeResponse(['status' => 405, 'msg' => '405 Method Not Allowed'], 405);
             }
-
-            return '405 Method Not Allowed';
+            return $this->makeResponse('405 Method Not Allowed', 405);
         });
         $this->handler('500', function (): array|string {
             if ($this->config()->get('api')) {
-                return ['status' => 500, 'msg' => '500 Internal Server Error'];
+                return $this->makeResponse(['status' => 500, 'msg' => '500 Internal Server Error'], 500);
             }
 
-            return '500 Internal Server Error';
+            return $this->makeResponse('500 Internal Server Error', 500);
+        });
+        $this->handler('419', function (): array|string {
+            if ($this->config()->get('api')) {
+                return $this->makeResponse(['status' => 419, 'msg' => '419 Page Expired'], 419);
+            }
+
+            return $this->makeResponse('419 Page Expired', 419);
         });
     }
 
