@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of the Scrawler package.
  *
@@ -10,7 +13,7 @@
 
 namespace Scrawler\Exception;
 
-class ContainerException extends \Exception
+final class ContainerException extends \Exception
 {
     /**
      * ContainerException constructor.

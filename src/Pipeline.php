@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of the Scrawler package.
  *
@@ -63,10 +66,10 @@ final class Pipeline
         $refFunction = new \ReflectionFunction($middleware);
         $parameters = $refFunction->getParameters();
         foreach ($parameters as $parameter) {
-            if ('request' === $parameter->getName() && Http\Request::class != $parameter->getType()) {
+            if ('request' === $parameter->getName() && Http\Request::class !== (string) $parameter->getType()) {
                 throw new Exception\InvalidMiddlewareException('First parameter of middleware must be of type Scrawler\Http\Request');
             }
-            if ('next' === $parameter->getName() && 'Closure' != $parameter->getType()) {
+            if ('next' === $parameter->getName() && 'Closure' !== (string) $parameter->getType()) {
                 throw new Exception\InvalidMiddlewareException('Second parameter of middleware must be of type Closure');
             }
             if ('request' !== $parameter->getName() && 'next' !== $parameter->getName()) {

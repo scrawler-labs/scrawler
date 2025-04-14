@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of the Scrawler package.
  *
@@ -10,7 +13,7 @@
 
 namespace Scrawler\Exception;
 
-class MethodNotAllowedException extends \Exception
+final class MethodNotAllowedException extends \Exception
 {
     public function __construct(string $message = '405 Method Not Allowed', int $code = 405, ?\Throwable $previous = null)
     {

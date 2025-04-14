@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of the Scrawler package.
  *
@@ -10,7 +13,7 @@
 
 namespace Scrawler\Exception;
 
-class InvalidMiddlewareException extends \Exception
+final class InvalidMiddlewareException extends \Exception
 {
     public function __construct(string $message = 'Invalid Middleware', int $code = 500, ?\Throwable $previous = null)
     {

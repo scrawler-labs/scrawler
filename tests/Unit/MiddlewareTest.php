@@ -1,5 +1,8 @@
 <?php
 use Scrawler\Factory\AppFactory;
+arch()->preset()->php();
+arch()->preset()->security();
+arch()->preset()->strict();
 
 
 it('tests for middleware ', function (): void {

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the Scrawler package.
  *
@@ -37,13 +38,14 @@ if (!function_exists('url')) {
     function url(string $path = ''): string
     {
         if (Scrawler\App::engine()->config()->has('https') && Scrawler\App::engine()->config()->get('https')) {
-            if(Scrawler\App::engine()->request()->getHttpHost() == null || Scrawler\App::engine()->request()->getHttpHost() == ':'){
+            if (null == Scrawler\App::engine()->request()->getHttpHost() || ':' == Scrawler\App::engine()->request()->getHttpHost()) {
                 return 'https://localhost'.Scrawler\App::engine()->request()->getBasePath().$path;
             }
+
             return 'https://'.Scrawler\App::engine()->request()->getHttpHost().Scrawler\App::engine()->request()->getBasePath().$path;
         }
 
-        if(Scrawler\App::engine()->request()->getHttpHost() == null || Scrawler\App::engine()->request()->getHttpHost() == ':'){
+        if (null == Scrawler\App::engine()->request()->getHttpHost() || ':' == Scrawler\App::engine()->request()->getHttpHost()) {
             return 'http://localhost'.Scrawler\App::engine()->request()->getBasePath().$path;
         }
 

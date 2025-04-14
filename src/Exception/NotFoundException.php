@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of the Scrawler package.
  *
@@ -10,7 +13,7 @@
 
 namespace Scrawler\Exception;
 
-class NotFoundException extends \Exception
+final class NotFoundException extends \Exception
 {
     public function __construct(string $message = '404 Not Found', int $code = 404, ?\Throwable $previous = null)
     {

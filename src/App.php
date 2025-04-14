@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the Scrawler package.
  *
@@ -12,10 +13,10 @@ declare(strict_types=1);
 
 namespace Scrawler;
 
+use Scrawler\Factory\AppFactory;
 use Scrawler\Http\Request;
 use Scrawler\Http\Response;
 use Scrawler\Router\Router;
-use Scrawler\Factory\AppFactory;
 
 /**
  * @method \PHLAK\Config\Config    config()
@@ -24,13 +25,10 @@ use Scrawler\Factory\AppFactory;
  * @method \Scrawler\Pipeline      pipeline()
  * @method \Scrawler\Router\Router router()
  */
-class App
+final class App
 {
     use Traits\Container;
     use Traits\Router;
-
-
-    private \DI\Container $container;
 
     /**
      * @var array<\Closure|callable>
@@ -42,10 +40,9 @@ class App
 
     private string $version = '2.x';
 
-    public function __construct(\DI\Container $container)
+    public function __construct(private \DI\Container $container)
     {
         $this->response = new Response();
-        $this->container = $container;
         $this->config()->set('debug', false);
         $this->config()->set('api', false);
         $this->config()->set('middlewares', []);
@@ -54,12 +51,14 @@ class App
             if ($this->config()->get('api')) {
                 return $this->makeResponse(['status' => 404, 'msg' => '404 Not Found'], 404);
             }
+
             return $this->makeResponse('404 Not Found', 404);
         });
         $this->handler('405', function (): Response {
             if ($this->config()->get('api')) {
                 return $this->makeResponse(['status' => 405, 'msg' => '405 Method Not Allowed'], 405);
             }
+
             return $this->makeResponse('405 Method Not Allowed', 405);
         });
         $this->handler('500', function (): Response {
@@ -103,17 +102,16 @@ class App
 
     /**
      * Convert php errors to exceptions.
-     * 
-     * @throws \ErrorException
      *
+     * @throws \ErrorException
      */
-    public function exception_error_handler(int $errno, string $errstr, string $errfile = null, int $errline): void
+    public function exception_error_handler(int $errno, string $errstr, int $errline, ?string $errfile = null): void
     {
-        if (!(error_reporting() & $errno)) {
+        if ((error_reporting() & $errno) === 0) {
             // This error code is not included in error_reporting
             return;
         }
-        if ($errno === E_DEPRECATED || $errno === E_USER_DEPRECATED) {
+        if (E_DEPRECATED === $errno || E_USER_DEPRECATED === $errno) {
             // Do not throw an Exception for deprecation warnings as new or unexpected
             // deprecations would break the application.
             return;
@@ -127,14 +125,14 @@ class App
      */
     public function handler(string $name, \Closure|callable $callback): void
     {
-        //@codeCoverageIgnoreStart
+        // @codeCoverageIgnoreStart
         $callback = \Closure::fromCallable(callback: $callback);
         if ('exception' === $name) {
-            //@phpstan-ignore-next-line
-            set_error_handler([$this, 'exception_error_handler']);
+            // @phpstan-ignore-next-line
+            set_error_handler($this->exception_error_handler(...));
             set_exception_handler($callback);
         }
-        //@codeCoverageIgnoreEnd
+        // @codeCoverageIgnoreEnd
         $this->handler[$name] = $callback;
     }
 
@@ -149,13 +147,13 @@ class App
     /**
      * Dispatch the request to the router and create response.
      */
-    public function dispatch(?Http\Request $request = null, Http\Response $response = null): Http\Response
+    public function dispatch(?Request $request = null, ?Response $response = null): Response
     {
         if (is_null($request)) {
-            $request = Http\Request::createFromGlobals();
+            $request = Request::createFromGlobals();
         }
         if (is_null($response)) {
-            $response = new Http\Response();
+            $response = new Response();
         }
 
         $this->request = $request;
@@ -163,18 +161,17 @@ class App
 
         $pipeline = new Pipeline();
 
-        return $pipeline->middleware($this->config()->get('middlewares'))->run($request, fn($request): Response => $this->dispatchRouter($request));
+        return $pipeline->middleware($this->config()->get('middlewares'))->run($request, fn ($request): Response => $this->dispatchRouter($request));
     }
 
     /**
      * Dispatch the request to the router and create response.
      */
-    private function dispatchRouter(Http\Request $request): Http\Response
+    private function dispatchRouter(Request $request): Response
     {
         $httpMethod = $request->getMethod();
         $uri = $request->getPathInfo();
         $this->response = $this->makeResponse('', 200);
-
 
         try {
             [$status, $handler, $args, $debug] = $this->router()->dispatch($httpMethod, $uri);
@@ -189,7 +186,7 @@ class App
                     // call the handler
                     $response = $this->container->call($handler, ['request' => $request, ...$args]);
                     $this->response = $this->makeResponse($response, 200);
-                // Send Response
+                    // Send Response
             }
         } catch (\Exception $e) {
             if ($this->config()->get('debug', false)) {
@@ -208,7 +205,7 @@ class App
      *
      * @throws Exception\NotFoundException
      */
-    private function handleNotFound(string $debug): Http\Response
+    private function handleNotFound(string $debug): Response
     {
         if ($this->config()->get('debug')) {
             throw new Exception\NotFoundException($debug);
@@ -223,7 +220,7 @@ class App
      *
      * @throws Exception\MethodNotAllowedException
      */
-    private function handleMethodNotAllowed(string $debug): Http\Response
+    private function handleMethodNotAllowed(string $debug): Response
     {
         if ($this->config()->get('debug')) {
             throw new Exception\MethodNotAllowedException($debug);
@@ -236,7 +233,7 @@ class App
     /**
      * Dipatch request and send response on screen.
      */
-    public function run(Http\Request $request = null, Http\Response $response = null): void
+    public function run(?Request $request = null, ?Response $response = null): void
     {
         $response = $this->dispatch($request, $response);
         $response->send();
@@ -245,11 +242,11 @@ class App
     /**
      * Builds response object from content.
      *
-     * @param array<string,mixed>|string|\Scrawler\Http\Response $content
+     * @param array<string,mixed>|string|Response $content
      */
-    private function makeResponse(array|string|Http\Response $content, int $status = 200): Http\Response
+    private function makeResponse(array|string|Response $content, int $status = 200): Response
     {
-        if (!$content instanceof Http\Response) {
+        if (!$content instanceof Response) {
             $this->response->setStatusCode($status);
 
             if (is_array($content)) {
@@ -292,11 +289,11 @@ class App
      */
     public function middleware(\Closure|callable|array|string $middlewares): void
     {
-        if(!is_array($middlewares)){
+        if (!is_array($middlewares)) {
             $middlewares = [$middlewares];
         }
         $middlewares = $this->pipeline()->validateMiddleware(middlewares: $middlewares);
-        $this->config()->set('middlewares', [...$this->config()->get('middlewares'),...$middlewares]);
+        $this->config()->set('middlewares', [...$this->config()->get('middlewares'), ...$middlewares]);
     }
 
     /**
