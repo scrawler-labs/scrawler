@@ -11,6 +11,7 @@ it('tests for middleware ', function (): void {
 
         return $response;
     });
+
     $request = Scrawler\Http\Request::create(
         '/',
         'GET',
