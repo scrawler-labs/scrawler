@@ -1,7 +1,7 @@
 <div align="center">
-<img src="https://user-images.githubusercontent.com/7591484/170873489-6aa40fe3-9d5c-476b-9434-f12f0a896c85.png" width="20%">
+<img src="https://github.com/user-attachments/assets/0befb0f2-0070-4e32-887e-e6df774a03a1" >
 
-<h1> Scrawler App </h1>
+<br><br>
 
 <a href="https://github.com/scrawler-labs/app/actions/workflows/main.yml"><img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/scrawler-labs/app/main.yml?style=flat-square">
 </a>
@@ -11,7 +11,7 @@
 [![Packagist Version](https://img.shields.io/packagist/v/scrawler/app?style=flat-square)](https://packagist.org/packages/scrawler/app)
 [![Packagist License](https://img.shields.io/packagist/l/scrawler/app?style=flat-square)](https://packagist.org/packages/scrawler/app)
 
-<br><br>
+
 
 
 🔥Create simple but powerful web apps and APIs quickly, with minumum lines of code🔥<br>
