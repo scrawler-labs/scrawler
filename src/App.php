@@ -105,7 +105,7 @@ final class App
      *
      * @throws \ErrorException
      */
-    public function exception_error_handler(int $errno, string $errstr, int $errline, ?string $errfile = null): void
+    public function exception_error_handler(int $errno, string $errstr, string $errfile,int $errline ): void
     {
         if ((error_reporting() & $errno) === 0) {
             // This error code is not included in error_reporting
